@@ -1,5 +1,8 @@
 package org.sdf.jimfan.ocpiclient.controller;
 
+import java.util.Date;
+
+import org.sdf.jimfan.ocpiclient.controller.VersionController.OcpiVersion;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
@@ -7,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RestController
@@ -47,6 +51,29 @@ public class VersionDetailsController {
 		}
 	}
 	
+	static class VersionDetailsResult {
+		
+		@JsonProperty("data")
+		public VersionDetails data;
+		
+		@JsonProperty("status_code")
+		public int statusCode;
+		
+		@JsonProperty("status_message")
+		public String statusMessage;
+		
+		@JsonProperty("timestamp")
+		@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ssZ")
+		public Date timestamp;
+		
+		public VersionDetailsResult(VersionDetails data, int statusCode, String statusMessage, Date timestamp) {
+			this.data = data;
+			this.statusCode = statusCode;
+			this.statusMessage = statusMessage;
+			this.timestamp = timestamp;
+		}
+	}
+	
 	static final String applicationDomain = System.getenv("AWS_APPRUNNER_DOMAIN");
 	
 	static final VersionDetails versionDetailsResult = new VersionDetails("2.2.1", new Endpoint[] {
@@ -54,14 +81,17 @@ public class VersionDetailsController {
 			new Endpoint("credentials", "RECEIVER", "https://" + applicationDomain + "/ocpi/2.2.1/credentials"),
 			new Endpoint("tokens", "RECEIVER", "https://" + applicationDomain + "/ocpi/2.2.1/tokens")
 		});
-			
 	
 	/**
 	 * Return version number with list of endpoint URLs e.g. /credentials, /tokens. For unknown reason
 	 * the EMSP software I work uses trailing slash in the request. So both cases are accepted here.
 	 */
 	@GetMapping({"/ocpi/2.2.1", "/ocpi/2.2.1/"})
-	public VersionDetails getVersionDetails() {
-		return versionDetailsResult;
+	public VersionDetailsResult getVersionDetails() {
+		return new VersionDetailsResult(
+			versionDetailsResult,
+			1000,
+			"OK", 
+			new Date());
 	}
 }
