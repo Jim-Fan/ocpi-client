@@ -54,13 +54,11 @@ public class VersionController {
 		}
 	}
 	
-	/**
-	 * Version URL domain is obtained from environment.
-	 */
-	static final String applicationDomain = System.getenv("AWS_APPRUNNER_DOMAIN");
+	static final String applicationProtocol = System.getenv("APP_HTTP_PROTOCOL");
+	static final String applicationDomain = System.getenv("APP_DOMAIN_NAME");
 	
 	static final OcpiVersion[] supportedVersions = new OcpiVersion[] {
-			new OcpiVersion("2.2.1", "https://" + applicationDomain + "/ocpi/2.2.1")
+			new OcpiVersion("2.2.1", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1")
 		};
 	
 	/**

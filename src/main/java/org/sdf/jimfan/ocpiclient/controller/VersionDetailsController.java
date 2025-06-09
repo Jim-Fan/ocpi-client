@@ -74,12 +74,13 @@ public class VersionDetailsController {
 		}
 	}
 	
-	static final String applicationDomain = System.getenv("AWS_APPRUNNER_DOMAIN");
+	static final String applicationProtocol = System.getenv("APP_HTTP_PROTOCOL");
+	static final String applicationDomain = System.getenv("APP_DOMAIN_NAME");
 	
 	static final VersionDetails versionDetailsResult = new VersionDetails("2.2.1", new Endpoint[] {
-			new Endpoint("credentials", "SENDER", "https://" + applicationDomain + "/ocpi/2.2.1/credentials"),
-			new Endpoint("credentials", "RECEIVER", "https://" + applicationDomain + "/ocpi/2.2.1/credentials"),
-			new Endpoint("tokens", "RECEIVER", "https://" + applicationDomain + "/ocpi/2.2.1/tokens")
+			new Endpoint("credentials", "SENDER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/credentials"),
+			new Endpoint("credentials", "RECEIVER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/credentials"),
+			new Endpoint("tokens", "RECEIVER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/tokens")
 		});
 	
 	/**
