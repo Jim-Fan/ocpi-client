@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component
-public class ControllerInterceptor implements HandlerInterceptor {
+public class RequestLoggingInterceptor implements HandlerInterceptor {
 
-	private final Logger logger = LoggerFactory.getLogger(ControllerInterceptor.class);
+	private final Logger logger = LoggerFactory.getLogger(RequestLoggingInterceptor.class);
 	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
