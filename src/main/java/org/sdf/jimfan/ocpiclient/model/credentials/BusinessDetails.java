@@ -14,7 +14,6 @@ public class BusinessDetails {
 	public String logoUrl;
 
 	public BusinessDetails(String name, String websiteUrl, String logoUrl) {
-		super();
 		this.name = name;
 		this.websiteUrl = websiteUrl;
 		this.logoUrl = logoUrl;

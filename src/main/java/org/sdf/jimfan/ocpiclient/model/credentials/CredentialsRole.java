@@ -17,7 +17,6 @@ public class CredentialsRole {
 	public String countryCode;
 
 	public CredentialsRole(Role role, BusinessDetails businessDetails, String partyId, String countryCode) {
-		super();
 		this.role = role;
 		this.businessDetails = businessDetails;
 		this.partyId = partyId;
