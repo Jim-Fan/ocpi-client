@@ -54,7 +54,7 @@ public class OperationController {
 
 			Credentials postBody = new Credentials(
 				ocpiHandshakeTokenB,
-				thisApplicationProtocol + "://" + thisApplicationDomain + "/ocpi/version",
+				thisApplicationProtocol + "://" + thisApplicationDomain + "/ocpi/versions",
 				new CredentialsRole[] {
 					new CredentialsRole(Role.CPO, new BusinessDetails("Jim's sample OCPI client", null, null),
 						ocpiPartyId, ocpiCountryCode) });
