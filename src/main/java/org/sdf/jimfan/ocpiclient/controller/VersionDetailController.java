@@ -1,23 +1,20 @@
 package org.sdf.jimfan.ocpiclient.controller;
 
-import java.util.Date;
-
-import org.sdf.jimfan.ocpiclient.controller.VersionController.OcpiVersion;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Date;
 
 @RestController
 @EnableAutoConfiguration
 @ComponentScan
 @Scope(value=WebApplicationContext.SCOPE_APPLICATION)
-public class VersionDetailsController {
+public class VersionDetailController {
 
 	static class Endpoint {
 
