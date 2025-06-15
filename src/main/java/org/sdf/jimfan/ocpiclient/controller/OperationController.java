@@ -1,6 +1,7 @@
 package org.sdf.jimfan.ocpiclient.controller;
 
 import org.sdf.jimfan.ocpiclient.service.OcpiCredentialService;
+import org.sdf.jimfan.ocpiclient.service.OcpiLocationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +27,27 @@ public class OperationController {
 	@Autowired
 	private OcpiCredentialService credentialService;
 	
+	@Autowired
+	private OcpiLocationService locationService;
+	
 	@GetMapping("/op/handshake")
 	public String performHandshake() {
 		
 		try {
 			String response = this.credentialService.performHandshake();
 			return response;
+		}
+		catch (Exception ex) {
+			return ex.getMessage();
+		}
+	}
+	
+	@GetMapping("/op/push-location")
+	public String pushLocation() {
+		
+		try {
+			this.locationService.pushLocationToServer();
+			return "OK";
 		}
 		catch (Exception ex) {
 			return ex.getMessage();

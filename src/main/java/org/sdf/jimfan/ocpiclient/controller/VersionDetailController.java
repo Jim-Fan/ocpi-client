@@ -60,7 +60,7 @@ public class VersionDetailController {
 		public String statusMessage;
 		
 		@JsonProperty("timestamp")
-		@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ssZ")
+		@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
 		public Date timestamp;
 		
 		public VersionDetailsResult(VersionDetails data, int statusCode, String statusMessage, Date timestamp) {
@@ -77,7 +77,8 @@ public class VersionDetailController {
 	static final VersionDetails versionDetailsResult = new VersionDetails("2.2.1", new Endpoint[] {
 			new Endpoint("credentials", "SENDER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/credentials"),
 			new Endpoint("credentials", "RECEIVER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/credentials"),
-			new Endpoint("tokens", "RECEIVER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/tokens")
+			new Endpoint("tokens", "RECEIVER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/tokens"),
+			new Endpoint("locations", "SENDER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/locations")
 		});
 	
 	/**
