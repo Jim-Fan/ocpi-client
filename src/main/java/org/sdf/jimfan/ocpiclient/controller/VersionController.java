@@ -43,7 +43,7 @@ public class VersionController {
 		public String statusMessage;
 		
 		@JsonProperty("timestamp")
-		@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ssZ")
+		@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
 		public Date timestamp;
 		
 		public VersionResult(OcpiVersion[] data, int statusCode, String statusMessage, Date timestamp) {
