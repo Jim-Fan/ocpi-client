@@ -3,8 +3,15 @@ package org.sdf.jimfan.ocpiclient.service;
 import java.util.List;
 
 import org.sdf.jimfan.ocpiclient.model.OcpiResponse;
+import org.sdf.jimfan.ocpiclient.model.datatypes.Capability;
+import org.sdf.jimfan.ocpiclient.model.datatypes.ConnectorFormat;
+import org.sdf.jimfan.ocpiclient.model.datatypes.ConnectorType;
 import org.sdf.jimfan.ocpiclient.model.datatypes.CountryCode;
 import org.sdf.jimfan.ocpiclient.model.datatypes.GeoLocation;
+import org.sdf.jimfan.ocpiclient.model.datatypes.PowerType;
+import org.sdf.jimfan.ocpiclient.model.datatypes.Status;
+import org.sdf.jimfan.ocpiclient.model.locations.Connector;
+import org.sdf.jimfan.ocpiclient.model.locations.EVSE;
 import org.sdf.jimfan.ocpiclient.model.locations.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +49,62 @@ public class OcpiLocationService {
 		TimeZone UTC = TimeZone.getTimeZone("UTC");
 		Date lastUpdateDate = new Date();
 		
+		Location reading = new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC1"), true, "Address of location 1", "Reading", CountryCode.GBR, new GeoLocation("51.456806", "-0.955806"), UTC, lastUpdateDate);
+		EVSE readingCharger = new EVSE(
+				"c410f411-ee01-4e33-a0ad-4d86f678bfd1",  // uid
+				String.format("%s*%s*E*%s", countryCode, partyId, "READING001"), // EVSE ID
+				Status.PLANNED,
+				List.of(new Connector("512f421f-351a-45a6-bf26-98661b55a7e8",
+						ConnectorType.IEC_62196_T3C,
+						ConnectorFormat.CABLE,
+						PowerType.DC,
+						500,
+						120,
+						lastUpdateDate)),
+				"READING-001", // physical reference
+				lastUpdateDate);
+		readingCharger.setCapabilities(List.of(Capability.REMOTE_START_STOP_CAPABLE));
+		reading.setEvses(List.of(readingCharger));
+		
+		Location basingstoke = new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC2"), true, "Address of location 2", "Basingstoke", CountryCode.GBR, new GeoLocation("51.266806", "-1.086557"), UTC, lastUpdateDate);
+		EVSE basingstokeCharger = new EVSE(
+				"914db198-4a24-42e0-9528-cc2c8a1e7aca",  // uid
+				String.format("%s*%s*E*%s", countryCode, partyId, "BASINGSTOKE001"), // EVSE ID
+				Status.PLANNED,
+				List.of(new Connector("ffd491ae-9d48-4a6c-9af3-93fd8bcd991f",
+						ConnectorType.IEC_62196_T3C,
+						ConnectorFormat.CABLE,
+						PowerType.DC,
+						500,
+						120,
+						lastUpdateDate)),
+				"BASINGSTOKE-001", // physical reference
+				lastUpdateDate);
+		basingstokeCharger.setCapabilities(List.of(Capability.REMOTE_START_STOP_CAPABLE));
+		basingstoke.setEvses(List.of(basingstokeCharger));
+		
+		Location oxford = new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC3"), true, "Address of location 3", "Oxford", CountryCode.GBR, new GeoLocation("51.753536", "-1.258603"), UTC, lastUpdateDate);
+		EVSE oxfordCharger = new EVSE(
+				"bf4c6e76-e8fb-49c6-b50c-21dec8cd3fb3",  // uid
+				String.format("%s*%s*E*%s", countryCode, partyId, "OXFORD001"), // EVSE ID
+				Status.PLANNED,
+				List.of(new Connector("18619a1e-6bfa-4207-b76a-e5d6cfc4612e",
+						ConnectorType.IEC_62196_T3C,
+						ConnectorFormat.CABLE,
+						PowerType.DC,
+						500,
+						120,
+						lastUpdateDate)),
+				"OXFORD-001", // physical reference
+				lastUpdateDate);
+		oxfordCharger.setCapabilities(List.of(Capability.REMOTE_START_STOP_CAPABLE));
+		oxford.setEvses(List.of(oxfordCharger));
+		
 		this.locations = Collections.synchronizedList(List.of(
-				new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC1"), true, "Address of location 1", "Reading", CountryCode.GBR, new GeoLocation("51.456806", "-0.955806"), UTC, lastUpdateDate),
-				new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC2"), true, "Address of location 2", "Basingstoke", CountryCode.GBR, new GeoLocation("51.266806", "-1.086557"), UTC, lastUpdateDate),
-				new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC3"), true, "Address of location 3", "Oxford", CountryCode.GBR, new GeoLocation("51.753536", "-1.258603"), UTC, lastUpdateDate)
-			));
+				reading,
+				basingstoke,
+				oxford
+				));
 	}
 	
 	public void pushLocationToServer() {
