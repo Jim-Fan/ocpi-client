@@ -22,11 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.context.WebApplicationContext;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.time.ZoneId;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -44,12 +40,14 @@ public class OcpiLocationService {
 	private List<Location> locations;
 	
 	private void initialiseLocations() {
+		
 		String countryCode = this.configService.getMyOcpiCountryCode();
 		String partyId = this.configService.getMyOcpiPartyId();
 		TimeZone UTC = TimeZone.getTimeZone("UTC");
 		Date lastUpdateDate = new Date();
 		
 		Location reading = new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC1"), true, "Address of location 1", "Reading", CountryCode.GBR, new GeoLocation("51.456806", "-0.955806"), UTC, lastUpdateDate);
+		reading.setName("Reading Somewhere");
 		EVSE readingCharger = new EVSE(
 				"c410f411-ee01-4e33-a0ad-4d86f678bfd1",  // uid
 				String.format("%s*%s*E*%s", countryCode, partyId, "READING001"), // EVSE ID
@@ -67,6 +65,7 @@ public class OcpiLocationService {
 		reading.setEvses(List.of(readingCharger));
 		
 		Location basingstoke = new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC2"), true, "Address of location 2", "Basingstoke", CountryCode.GBR, new GeoLocation("51.266806", "-1.086557"), UTC, lastUpdateDate);
+		basingstoke.setName("Basingstoke Somewhere");
 		EVSE basingstokeCharger = new EVSE(
 				"914db198-4a24-42e0-9528-cc2c8a1e7aca",  // uid
 				String.format("%s*%s*E*%s", countryCode, partyId, "BASINGSTOKE001"), // EVSE ID
@@ -84,6 +83,7 @@ public class OcpiLocationService {
 		basingstoke.setEvses(List.of(basingstokeCharger));
 		
 		Location oxford = new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC3"), true, "Address of location 3", "Oxford", CountryCode.GBR, new GeoLocation("51.753536", "-1.258603"), UTC, lastUpdateDate);
+		oxford.setName("Oxford Somewhere");
 		EVSE oxfordCharger = new EVSE(
 				"bf4c6e76-e8fb-49c6-b50c-21dec8cd3fb3",  // uid
 				String.format("%s*%s*E*%s", countryCode, partyId, "OXFORD001"), // EVSE ID
@@ -103,8 +103,7 @@ public class OcpiLocationService {
 		this.locations = Collections.synchronizedList(List.of(
 				reading,
 				basingstoke,
-				oxford
-				));
+				oxford));
 	}
 	
 	public void pushLocationToServer() {
@@ -112,16 +111,10 @@ public class OcpiLocationService {
 		if (this.locations == null) {
 			this.initialiseLocations();
 		}
-		String tokenA = this.configService.getMyOcpiHandshakeToken();
-		String tokenB = this.configService.getTheirOcpiCredentialToken();
-		String tokenC = this.configService.getMyOcpiCredentialToken();
 		String serverCredentialUrl = this.configService.getTheirOcpiCredentialsUrl();
-		String protocol = this.configService.getMyApplicationProtocol();
-		String domain = this.configService.getMyApplicationDomain();
 		String partyId = this.configService.getMyOcpiPartyId();
 		String countryCode = this.configService.getMyOcpiCountryCode();
-		
-		String encodedToken = new String(Base64.getEncoder().encode(tokenC.getBytes()));
+		String encodedToken = this.configService.getMyOcpiCredentialTokenEncoded();
 		
 		ResponseEntity<OcpiResponse> response = null;
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -155,9 +148,14 @@ public class OcpiLocationService {
 							.retrieve()
 							.toEntity(OcpiResponse.class);
 					
-					logger.info("Put location response = " + objectMapper.writeValueAsString(response.getBody()));
+					OcpiResponse resp = response.getBody();
+					if (resp.getStatusCode() == 1000) {
+						logger.info("Put location response = " + objectMapper.writeValueAsString(resp));
+					}
+					else {
+						logger.warn("(ERROR) Put location response = " + objectMapper.writeValueAsString(resp));
+					}
 				}
-				
 				logger.info("Location push completed");
 			}
 		}
