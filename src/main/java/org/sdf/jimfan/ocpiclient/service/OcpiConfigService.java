@@ -1,5 +1,7 @@
 package org.sdf.jimfan.ocpiclient.service;
 
+import java.util.Base64;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
@@ -21,49 +23,43 @@ public class OcpiConfigService {
 	public String getMyApplicationProtocol() {
 		return myApplicationProtocol;
 	}
-	public void setMyApplicationProtocol(String myApplicationProtocol) {
-		this.myApplicationProtocol = myApplicationProtocol;
-	}
+	
 	public String getMyApplicationDomain() {
 		return myApplicationDomain;
 	}
-	public void setMyApplicationDomain(String myApplicationDomain) {
-		this.myApplicationDomain = myApplicationDomain;
-	}
+	
 	public String getMyOcpiHandshakeToken() {
 		return myOcpiHandshakeToken;
 	}
-	public void setMyOcpiHandshakeToken(String myOcpiHandshakeToken) {
-		this.myOcpiHandshakeToken = myOcpiHandshakeToken;
-	}
+	
 	public String getMyOcpiCredentialToken() {
 		return myOcpiCredentialToken;
 	}
-	public void setMyOcpiCredentialToken(String myOcpiCredentialToken) {
-		this.myOcpiCredentialToken = myOcpiCredentialToken;
+	
+	public String getMyOcpiCredentialTokenEncoded() {
+		if (myOcpiCredentialToken == null || myOcpiCredentialToken.length() <= 0) {
+			return "";
+		}
+		return new String(Base64.getEncoder().encode(myOcpiCredentialToken.getBytes()));
 	}
+	
+	public void setMyOcpiCredentialToken(String newTokenC) {
+		this.myOcpiCredentialToken = newTokenC;
+	}
+	
 	public String getMyOcpiPartyId() {
 		return myOcpiPartyId;
 	}
-	public void setMyOcpiPartyId(String myOcpiPartyId) {
-		this.myOcpiPartyId = myOcpiPartyId;
-	}
+	
 	public String getMyOcpiCountryCode() {
 		return myOcpiCountryCode;
 	}
-	public void setMyOcpiCountryCode(String myOcpiCountryCode) {
-		this.myOcpiCountryCode = myOcpiCountryCode;
-	}
+	
 	public String getTheirOcpiCredentialsUrl() {
 		return theirOcpiCredentialsUrl;
 	}
-	public void setTheirOcpiCredentialsUrl(String theirOcpiCredentialsUrl) {
-		this.theirOcpiCredentialsUrl = theirOcpiCredentialsUrl;
-	}
+	
 	public String getTheirOcpiCredentialToken() {
 		return theirOcpiCredentialToken;
-	}
-	public void setTheirOcpiCredentialToken(String theirOcpiCredentialToken) {
-		this.theirOcpiCredentialToken = theirOcpiCredentialToken;
 	}
 }
