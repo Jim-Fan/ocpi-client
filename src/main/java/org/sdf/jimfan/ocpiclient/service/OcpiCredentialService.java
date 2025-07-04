@@ -4,10 +4,10 @@ import java.util.Base64;
 
 import org.sdf.jimfan.ocpiclient.exception.OcpiException;
 import org.sdf.jimfan.ocpiclient.model.OcpiResponse;
-import org.sdf.jimfan.ocpiclient.model.credentials.BusinessDetails;
-import org.sdf.jimfan.ocpiclient.model.credentials.Credentials;
-import org.sdf.jimfan.ocpiclient.model.credentials.CredentialsRole;
-import org.sdf.jimfan.ocpiclient.model.credentials.Role;
+import org.sdf.jimfan.ocpiclient.model.credential.BusinessDetails;
+import org.sdf.jimfan.ocpiclient.model.credential.Credentials;
+import org.sdf.jimfan.ocpiclient.model.credential.CredentialsRole;
+import org.sdf.jimfan.ocpiclient.model.credential.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
