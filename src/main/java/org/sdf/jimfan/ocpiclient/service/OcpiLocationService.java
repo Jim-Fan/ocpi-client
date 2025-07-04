@@ -46,7 +46,7 @@ public class OcpiLocationService {
 		TimeZone UTC = TimeZone.getTimeZone("UTC");
 		Date lastUpdateDate = new Date();
 		
-		Location reading = new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC1"), true, "Address of location 1", "Reading", CountryCode.GBR, new GeoLocation("51.456806", "-0.955806"), UTC, lastUpdateDate);
+		Location reading = new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC1"), true, "Address of location 1", "Reading", CountryCode.GB, new GeoLocation("51.456806", "-0.955806"), UTC, lastUpdateDate);
 		reading.setName("Reading Somewhere");
 		EVSE readingCharger = new EVSE(
 				"c410f411-ee01-4e33-a0ad-4d86f678bfd1",  // uid
@@ -64,7 +64,7 @@ public class OcpiLocationService {
 		readingCharger.setCapabilities(List.of(Capability.REMOTE_START_STOP_CAPABLE));
 		reading.setEvses(List.of(readingCharger));
 		
-		Location basingstoke = new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC2"), true, "Address of location 2", "Basingstoke", CountryCode.GBR, new GeoLocation("51.266806", "-1.086557"), UTC, lastUpdateDate);
+		Location basingstoke = new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC2"), true, "Address of location 2", "Basingstoke", CountryCode.GB, new GeoLocation("51.266806", "-1.086557"), UTC, lastUpdateDate);
 		basingstoke.setName("Basingstoke Somewhere");
 		EVSE basingstokeCharger = new EVSE(
 				"914db198-4a24-42e0-9528-cc2c8a1e7aca",  // uid
@@ -82,7 +82,7 @@ public class OcpiLocationService {
 		basingstokeCharger.setCapabilities(List.of(Capability.REMOTE_START_STOP_CAPABLE));
 		basingstoke.setEvses(List.of(basingstokeCharger));
 		
-		Location oxford = new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC3"), true, "Address of location 3", "Oxford", CountryCode.GBR, new GeoLocation("51.753536", "-1.258603"), UTC, lastUpdateDate);
+		Location oxford = new Location(countryCode, partyId, String.format("%s-%s-%s", countryCode, partyId, "LOC3"), true, "Address of location 3", "Oxford", CountryCode.GB, new GeoLocation("51.753536", "-1.258603"), UTC, lastUpdateDate);
 		oxford.setName("Oxford Somewhere");
 		EVSE oxfordCharger = new EVSE(
 				"bf4c6e76-e8fb-49c6-b50c-21dec8cd3fb3",  // uid
