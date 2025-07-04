@@ -2,6 +2,7 @@ package org.sdf.jimfan.ocpiclient.model.datatypes;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class StatusSchedule {
@@ -10,6 +11,7 @@ public class StatusSchedule {
 	private final Date periodBegin;
 
 	@JsonProperty("period_end")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private final Date periodEnd;
 
 	@JsonProperty("status")

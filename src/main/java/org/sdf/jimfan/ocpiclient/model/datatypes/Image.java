@@ -28,7 +28,6 @@ public class Image {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private int height;
 
-	
 	public Image(URL url, URL thumbnail, ImageCategory imageCategory, String type, int width, int height) {
 		super();
 		this.url = url;
