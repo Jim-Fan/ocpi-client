@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Date;
@@ -44,7 +43,7 @@ public class TokenController {
 			@PathVariable String countryCode,
 			@PathVariable String partyId,
 			@PathVariable String tokenUid,
-			@RequestParam(required = false) TokenType type) {
+			@RequestParam(required = false, defaultValue = "RFID") TokenType type) {
 		
 		logger.info("countryCode = {}, partyId = {}, tokenUid = {}, type = {}", countryCode, partyId, tokenUid);
 		
@@ -52,7 +51,11 @@ public class TokenController {
 			type = TokenType.RFID;
 		}
 		Token result = this.tokenService.findToken(countryCode, partyId, tokenUid, type);
-		return new OcpiResponse(result, 1000, "Token found", new Date());
+		if (result != null) {
+			logger.info("Result = {}", result);
+			return new OcpiResponse(result, 1000, "Token found", new Date());
+		}
+		return new OcpiResponse(null, 2000, "Token not found", new Date());
 	}
 	
 	@PutMapping("/ocpi/2.2.1/tokens/{countryCode}/{partyId}/{tokenUid}")
@@ -69,7 +72,7 @@ public class TokenController {
 		Token replacedToken = this.tokenService.upsertToken(countryCode, partyId, tokenUid, type, incomingToken);
 		
 		if (replacedToken != null) {
-			logger.info("Token replaced = " + replacedToken.toString());
+			logger.info("Token replaced = {}", replacedToken);
 		}
 		else {
 			logger.info("Token inserted");
@@ -119,10 +122,6 @@ public class TokenController {
 			updated = true;
 			token.setValid(payload.valid);
 		}
-		if (payload.valid != null) {
-			updated = true;
-			token.setValid(payload.valid);
-		}
 		if (payload.whitelist != null) {
 			updated = true;
 			token.setWhitelist(payload.whitelist);
@@ -151,9 +150,15 @@ public class TokenController {
 			logger.warn("Found token but no field updated");
 		}
 		
-		return new OcpiResponse(null, 1000, (updated ? "Token updated" : "Token found, but not updated"), new Date());
+		if (updated) {
+			return new OcpiResponse(null, 1000, "Token updated", new Date());
+		}
+		return new OcpiResponse(null, 1001, "Token found, but no update was made", new Date());
 	}
 	
+	/**
+	 * The PATCH endpoint allows submission of partial token. Thus the token class does not work.
+	 */
 	private static class UpdateTokenDto {
 		public String contract_id;
 		public String visual_number;
