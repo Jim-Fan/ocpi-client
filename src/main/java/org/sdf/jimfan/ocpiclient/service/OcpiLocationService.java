@@ -1,7 +1,5 @@
 package org.sdf.jimfan.ocpiclient.service;
 
-import java.util.List;
-
 import org.sdf.jimfan.ocpiclient.model.OcpiResponse;
 import org.sdf.jimfan.ocpiclient.model.datatype.Capability;
 import org.sdf.jimfan.ocpiclient.model.datatype.ConnectorFormat;
@@ -23,10 +21,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TimeZone;
+
 
 @Service
 @Scope(value=WebApplicationContext.SCOPE_APPLICATION)
@@ -39,6 +41,7 @@ public class OcpiLocationService {
 	
 	private List<Location> locations;
 	
+	@PostConstruct
 	private void initialiseLocations() {
 		
 		String countryCode = this.configService.getMyOcpiCountryCode();
@@ -104,13 +107,12 @@ public class OcpiLocationService {
 				reading,
 				basingstoke,
 				oxford));
+		
+		logger.info("Locations initialised");
 	}
 	
 	public void pushLocationToServer() {
-		
-		if (this.locations == null) {
-			this.initialiseLocations();
-		}
+
 		String serverCredentialUrl = this.configService.getTheirOcpiCredentialsUrl();
 		String partyId = this.configService.getMyOcpiPartyId();
 		String countryCode = this.configService.getMyOcpiCountryCode();
@@ -164,5 +166,9 @@ public class OcpiLocationService {
 			logger.error(ex.getMessage());
 			ex.printStackTrace();
 		}
+	}
+	
+	public List<Location> getLocations() {
+		return this.locations;
 	}
 }
