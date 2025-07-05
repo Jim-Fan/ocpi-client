@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
-public class OcpiResponse {
+public class OcpiResponse extends JsonFormattable {
 
 	@JsonProperty("data")
 	@JsonIgnoreProperties(ignoreUnknown = true) 
@@ -31,25 +31,16 @@ public class OcpiResponse {
 	public Object getData() {
 		return data;
 	}
-	public void setData(Object data) {
-		this.data = data;
-	}
+	
 	public int getStatusCode() {
 		return statusCode;
 	}
-	public void setStatusCode(int statusCode) {
-		this.statusCode = statusCode;
-	}
+	
 	public String getStatusMessage() {
 		return statusMessage;
 	}
-	public void setStatusMessage(String statusMessage) {
-		this.statusMessage = statusMessage;
-	}
+	
 	public Date getTimestamp() {
 		return timestamp;
-	}
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
 	}
 }

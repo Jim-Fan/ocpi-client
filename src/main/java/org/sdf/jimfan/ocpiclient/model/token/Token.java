@@ -1,5 +1,6 @@
 package org.sdf.jimfan.ocpiclient.model.token;
 
+import org.sdf.jimfan.ocpiclient.model.JsonFormattable;
 import org.sdf.jimfan.ocpiclient.model.datatype.CountryCode;
 import org.sdf.jimfan.ocpiclient.model.datatype.EnergyContract;
 import org.sdf.jimfan.ocpiclient.model.datatype.LanguageCode;
@@ -10,14 +11,10 @@ import org.sdf.jimfan.ocpiclient.model.datatype.WhitelistType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;
 
-public class Token {
+public class Token extends JsonFormattable {
 	
-	private static ObjectMapper mapper = new ObjectMapper();
-
 	@JsonProperty("country_code")
 	private CountryCode countryCode;
 	
@@ -79,18 +76,6 @@ public class Token {
 		this.lastUpdated = lastUpdated;
 	}
 	
-	@Override
-	public String toString() {
-		String result = null;
-		try {
-			result = mapper.writeValueAsString(this);
-		}
-		catch (JsonProcessingException ex) {
-			result = super.toString();
-		}
-		return result;
-	}
-
 	public CountryCode getCountryCode() {
 		return countryCode;
 	}
