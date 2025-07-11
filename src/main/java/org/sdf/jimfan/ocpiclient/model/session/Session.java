@@ -4,13 +4,8 @@ import org.sdf.jimfan.ocpiclient.model.JsonFormattable;
 import org.sdf.jimfan.ocpiclient.model.datatype.AuthMethod;
 import org.sdf.jimfan.ocpiclient.model.datatype.ChargingPeriod;
 import org.sdf.jimfan.ocpiclient.model.datatype.CountryCode;
-import org.sdf.jimfan.ocpiclient.model.datatype.EnergyContract;
-import org.sdf.jimfan.ocpiclient.model.datatype.LanguageCode;
 import org.sdf.jimfan.ocpiclient.model.datatype.Price;
-import org.sdf.jimfan.ocpiclient.model.datatype.ProfileType;
 import org.sdf.jimfan.ocpiclient.model.datatype.SessionStatus;
-import org.sdf.jimfan.ocpiclient.model.datatype.TokenType;
-import org.sdf.jimfan.ocpiclient.model.datatype.WhitelistType;
 import org.sdf.jimfan.ocpiclient.model.token.CdrToken;
 
 import com.fasterxml.jackson.annotation.JsonFormat;

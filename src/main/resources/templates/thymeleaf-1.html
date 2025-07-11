@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header:: head}"></head>
+<body class="d-flex">
+	<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+	<!-- Content to be replaced -->
+	<div class="flex-grow-1 p-4" th:fragment="content">
+		<p th:text="${message}" />
+	</div>
+</body>
+</html>
