@@ -72,6 +72,8 @@ public class OcpiTokenService {
 			logger.info("Token {} is replaced by {}", replaced, incomingToken);
 			return replaced;
 		}
+		
+		// TODO: No update, what to do? Returning null is wrong as it means new token inserted above
 		logger.info("Incoming token {} is older than existing, not updating", incomingToken);
 		return null;
 	}
@@ -102,25 +104,21 @@ public class OcpiTokenService {
 		Date now = new Date();
 		String fromLast30Days = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'").format(
 				new Date(now.getTime() - (1000 * 60 * 60 * 24 * 30)));
-		int count = 0;
+		int tokenAdded = 0;
+		int tokenProcessed = 0;
+		int tokenIgnored = 0;
 		
 		try {
 			String url = serverCredentialUrl.replace("/credentials", "/tokens/");
 			logger.info("Get token url = " + url);
 			
-			/*
-			// TODO: Need to check header for total count ... etc
-			OcpiResponse<List<Token>> response = restClient.get()
-					.uri(url, Map.of("limit", 50, "date_from", fromLast30Days))
-					.header("Authorization", "Token " + encodedToken)
-					.retrieve()
-					.body(new ParameterizedTypeReference<>() {});
-			*/
+			// TODO: Should use do-while loop to go through all pages
+			
 			ResponseEntity<OcpiResponse<List<Token>>> httpResp = restClient.get()
 					.uri(url, Map.of("limit", 50, "date_from", fromLast30Days))
 					.header("Authorization", "Token " + encodedToken)
 					.retrieve()
-					.toEntity(new ParameterizedTypeReference<>() {});
+					.toEntity(new ParameterizedTypeReference<>() {});	// Let Java do the type inference
 			
 			List<String> header = httpResp.getHeaders().get("X-Total-Count");
 			if (header != null && header.size() > 0) {
@@ -144,18 +142,36 @@ public class OcpiTokenService {
 			logger.info("Token data acquired, updating local storage");
 			
 			// synchronized (this.tokens) {
-				
-			this.tokens.clear();
+			
+			// this.tokens.clear();
+			
 			while (iter.hasNext()) {
-				Token token = iter.next();
-				String key = String.format("%s:%s:%s:%s", token.getCountryCode(), token.getPartyId(), token.getUid(), token.getTokenType());
+				Token incomingToken = iter.next();
+				String key = String.format("%s:%s:%s:%s", incomingToken.getCountryCode(), incomingToken.getPartyId(), incomingToken.getUid(), incomingToken.getTokenType());
 				
-				// Assume no duplicate is in data
-				this.tokens.put(key, token);
-				++count;
+				Token existing = this.tokens.get(key);
+				if (existing == null) {
+					this.tokens.put(key, incomingToken);
+					++tokenAdded;
+				}
+				else if (incomingToken.getLastUpdated() != null) {
+					if (incomingToken.getLastUpdated().getTime() > existing.getLastUpdated().getTime()) {
+						this.tokens.put(key, incomingToken);
+						++tokenAdded;
+					}
+					else {
+						logger.warn("Incoming token {} is not newer then existing {}, ignored", incomingToken, existing);
+						++tokenIgnored;
+					}
+				}
+				else {
+					logger.warn("Incoming token {} has null last updated field, ignored", incomingToken);
+					++tokenIgnored;
+				}
 				
-				if (count % 100 == 0) {
-					logger.info("Processed {} tokens", count);
+				++tokenProcessed;
+				if (tokenProcessed % 100 == 0) {
+					logger.info("Processed {} tokens...", tokenProcessed);
 				}
 
 				Thread.sleep(30);
@@ -168,11 +184,11 @@ public class OcpiTokenService {
 			ex.printStackTrace();
 		}
 		finally {
-			logger.info("Processed {} tokens, now has {} tokens", count, this.tokens.mappingCount());
+			logger.info("Processed {} tokens, now has {} tokens", tokenAdded, this.tokens.mappingCount());
 			synchronized (this.tokenSyncLock) {
 				this.isPullingTokenFromServer = false;
 			}
-			logger.info("Set this.isPullingTokenFromServer = {}", this.isPullingTokenFromServer);
+			logger.info("Token pull statistics: tokenProcessed = {}, tokenAdded = {}, tokenIgnored = {}", tokenProcessed, tokenAdded, tokenIgnored);
 		}
 	}
 }

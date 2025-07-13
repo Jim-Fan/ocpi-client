@@ -2,13 +2,15 @@ package org.sdf.jimfan.ocpiclient.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
 public class OcpiResponse<T> extends JsonFormattable {
 
 	@JsonProperty("data")
-	@JsonIgnoreProperties(ignoreUnknown = true) 
+	@JsonIgnoreProperties(ignoreUnknown = true) // TODO: Review this
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private T data;
 	
 	@JsonProperty("status_code")

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Date;
@@ -39,7 +44,9 @@ public class TokenController {
 	private OcpiTokenService tokenService;
 	
 	@GetMapping("/ocpi/2.2.1/tokens/{countryCode}/{partyId}/{tokenUid}")
-	public OcpiResponse getToken(
+	public OcpiResponse<Token> getToken(
+			HttpServletRequest request,
+			HttpServletResponse response,
 			@PathVariable String countryCode,
 			@PathVariable String partyId,
 			@PathVariable String tokenUid,
@@ -47,42 +54,55 @@ public class TokenController {
 		
 		logger.info("countryCode = {}, partyId = {}, tokenUid = {}, type = {}", countryCode, partyId, tokenUid);
 		
+		// TODO: Validate params
+		
 		if (type == null) {
 			type = TokenType.RFID;
 		}
 		Token result = this.tokenService.findToken(countryCode, partyId, tokenUid, type);
 		if (result != null) {
 			logger.info("Result = {}", result);
-			return new OcpiResponse(result, 1000, "Token found", new Date());
+			response.setStatus(HttpStatus.OK.value());
+			return new OcpiResponse<Token>(result, 1000, "Token found", new Date());
 		}
-		return new OcpiResponse(null, 2000, "Token not found", new Date());
+		
+		response.setStatus(HttpStatus.NOT_FOUND.value());
+		return new OcpiResponse<Token>(null, 2000, "Token not found", new Date());
 	}
 	
 	@PutMapping("/ocpi/2.2.1/tokens/{countryCode}/{partyId}/{tokenUid}")
-	public OcpiResponse receiveToken(
+	public OcpiResponse<Object> receiveToken(
+			HttpServletRequest request,
+			HttpServletResponse response,
 			@PathVariable String countryCode,
 			@PathVariable String partyId,
 			@PathVariable String tokenUid,
 			@RequestParam(required = false, defaultValue = "RFID") TokenType type,
 			@RequestBody(required = true) Token incomingToken) {
 		
-		logger.info("countryCode = {}, partyId = {}, tokenUid = {}, type = {}", countryCode, partyId, tokenUid, type);
-		logger.info("Incoming token = {}", incomingToken.toString());
+		logger.info("countryCode = {}, partyId = {}, tokenUid = {}, type = {}, incomingToken = {}", countryCode, partyId, tokenUid, type, incomingToken);
 		
+		// TODO: Validate params
+		
+		// TODO: Relying on nullity of result is incorrect. Correct this.
 		Token replacedToken = this.tokenService.upsertToken(countryCode, partyId, tokenUid, type, incomingToken);
 		
 		if (replacedToken != null) {
+			response.setStatus(HttpStatus.OK.value());
 			logger.info("Token replaced = {}", replacedToken);
 		}
 		else {
-			logger.info("Token inserted");
+			response.setStatus(HttpStatus.CREATED.value());
+			logger.info("Token created");
 		}
 		
-		return new OcpiResponse(null, 1000, (replacedToken != null ? "Token replaced" : "Token inserted"), new Date());
+		return new OcpiResponse<Object>(null, 1000, (replacedToken != null ? "Token replaced" : "Token created"), new Date());
 	}
 	
 	@PatchMapping("/ocpi/2.2.1/tokens/{countryCode}/{partyId}/{tokenUid}")
-	public OcpiResponse updateToken(
+	public OcpiResponse<Object> updateToken(
+			HttpServletRequest request,
+			HttpServletResponse response,
 			@PathVariable String countryCode,
 			@PathVariable String partyId,
 			@PathVariable String tokenUid,
@@ -94,66 +114,67 @@ public class TokenController {
 		Token token = this.tokenService.findToken(countryCode, partyId, tokenUid, type);
 		
 		if (token == null || token.getTokenType() != type) {
-			return new OcpiResponse(null, 2000, "Token not found", new Date());
+			response.setStatus(HttpStatus.NOT_FOUND.value());
+			return new OcpiResponse<Object>(null, 2000, "Token not found", new Date());
+		}
+		if (payload.last_updated == null) {
+			response.setStatus(HttpStatus.BAD_REQUEST.value());
+			return new OcpiResponse<Object>(null, 2001, "last_updated field missing", new Date());
+		}
+		if (payload.last_updated.getTime() < token.getLastUpdated().getTime()) {
+			logger.warn("Incoming token is old than existing one ({} vs {}), no further update", payload.last_updated, token.getLastUpdated());
+			response.setStatus(HttpStatus.CONFLICT.value());
+			return new OcpiResponse<Object>(null, 2000, "Incoming token is older than existing token in system", new Date());
 		}
 		
 		boolean updated = false;
-		if (payload.contract_id != null) {
+		
+		if (payload.contract_id != null && !payload.contract_id.equals(token.getContractId())) {
 			updated = true;
 			token.setContractId(payload.contract_id);
 		}
-		if (payload.visual_number != null) {
+		if (payload.visual_number != null && !payload.visual_number.equals(token.getContractId())) {
 			updated = true;
 			token.setVisualNumber(payload.visual_number);
 		}
-		if (payload.visual_number != null) {
-			updated = true;
-			token.setVisualNumber(payload.visual_number);
-		}
-		if (payload.issuer != null) {
+		if (payload.issuer != null && !payload.issuer.equals(token.getIssuer())) {
 			updated = true;
 			token.setIssuer(payload.issuer);
 		}
-		if (payload.group_id != null) {
+		if (payload.group_id != null && !payload.group_id.equals(token.getGroupId())) {
 			updated = true;
-			token.setGroup_id(payload.group_id);
+			token.setGroupId(payload.group_id);
 		}
-		if (payload.valid != null) {
+		if (payload.valid != null && !payload.valid.equals(token.getValid())) {
 			updated = true;
 			token.setValid(payload.valid);
 		}
-		if (payload.whitelist != null) {
+		if (payload.whitelist != null && !payload.whitelist.equals(token.getWhitelist())) {
 			updated = true;
 			token.setWhitelist(payload.whitelist);
 		}
-		if (payload.language != null) {
+		if (payload.language != null && !payload.language.equals(token.getLanguage())) {
 			updated = true;
 			token.setLanguage(payload.language);
 		}
-		if (payload.default_profile_type != null) {
+		if (payload.default_profile_type != null && !payload.default_profile_type.equals(token.getDefaultProfileType())) {
 			updated = true;
 			token.setDefaultProfileType(payload.default_profile_type);
 		}
-		if (payload.energy_contract != null) {
+		if (payload.energy_contract != null && !payload.energy_contract.equals(token.getEnergyContract())) {
 			updated = true;
 			token.setEnergyContract(payload.energy_contract);
-		}
-		if (payload.last_updated != null) {
-			updated = true;
-			token.setLastUpdated(payload.last_updated);
 		}
 		
 		if (updated) {
 			this.tokenService.upsertToken(countryCode, partyId, tokenUid, type, token);
 		}
 		else {
-			logger.warn("Found token but no field updated");
+			logger.warn("Found token but no update was made");
 		}
 		
-		if (updated) {
-			return new OcpiResponse(null, 1000, "Token updated", new Date());
-		}
-		return new OcpiResponse(null, 1001, "Token found, but no update was made", new Date());
+		response.setStatus(HttpStatus.OK.value());
+		return new OcpiResponse<Object>(null, 1000, "Token updated", new Date());
 	}
 	
 	/**

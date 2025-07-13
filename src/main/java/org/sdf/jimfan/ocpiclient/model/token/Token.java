@@ -132,11 +132,11 @@ public class Token extends JsonFormattable {
 		this.issuer = issuer;
 	}
 
-	public String getGroup_id() {
+	public String getGroupId() {
 		return groupId;
 	}
 
-	public void setGroup_id(String group_id) {
+	public void setGroupId(String group_id) {
 		this.groupId = group_id;
 	}
 
