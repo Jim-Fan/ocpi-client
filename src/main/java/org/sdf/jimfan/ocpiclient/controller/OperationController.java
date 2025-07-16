@@ -2,7 +2,8 @@ package org.sdf.jimfan.ocpiclient.controller;
 
 import org.sdf.jimfan.ocpiclient.service.OcpiCredentialService;
 import org.sdf.jimfan.ocpiclient.service.OcpiLocationService;
-
+import org.sdf.jimfan.ocpiclient.service.OcpiSessionService;
+import org.sdf.jimfan.ocpiclient.service.OcpiTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
@@ -30,6 +31,9 @@ public class OperationController {
 	@Autowired
 	private OcpiLocationService locationService;
 	
+	@Autowired
+	private OcpiTokenService tokenService;
+	
 	@GetMapping("/op/handshake")
 	public String performHandshake() {
 		
@@ -47,6 +51,18 @@ public class OperationController {
 		
 		try {
 			this.locationService.pushLocationToServer();
+			return "OK";
+		}
+		catch (Exception ex) {
+			return ex.getMessage();
+		}
+	}
+	
+	@GetMapping("/op/pull-token")
+	public String pullTokensFromServer() {
+		
+		try {
+			this.tokenService.pullTokensFromServer();
 			return "OK";
 		}
 		catch (Exception ex) {
