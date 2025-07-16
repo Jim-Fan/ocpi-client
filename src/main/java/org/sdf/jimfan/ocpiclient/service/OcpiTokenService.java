@@ -44,7 +44,7 @@ public class OcpiTokenService {
 	
 	public Token findToken(String countryCode, String partyId, String tokenUid, TokenType type) {
 		
-		String key = String.format("%s:%s:%s%s", countryCode, partyId, tokenUid, type);
+		String key = String.format("%s:%s:%s:%s", countryCode, partyId, tokenUid, type);
 		Token result = this.tokens.get(key);
 		if (result != null && result.getTokenType() == type) {
 			return result;
