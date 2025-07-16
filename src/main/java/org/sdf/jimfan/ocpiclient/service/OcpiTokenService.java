@@ -18,6 +18,7 @@ import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriBuilderFactory;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.text.DateFormat;
@@ -32,6 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OcpiTokenService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(OcpiTokenService.class);
+	
+	private static final int MAX_PULL_TOKEN_EXCEPTION = 3;
 	
 	@Autowired
 	private OcpiConfigService configService;
@@ -90,7 +93,7 @@ public class OcpiTokenService {
 				logger.info("Token pull is in progress, do nothing and return");
 				return;
 			}
-			logger.info("Token pull commences");
+			logger.info("Token pull commencing");
 			this.isPullingTokenFromServer = true;
 		}
 		
@@ -108,87 +111,122 @@ public class OcpiTokenService {
 		int tokenProcessed = 0;
 		int tokenIgnored = 0;
 		
-		try {
-			String url = serverCredentialUrl.replace("/credentials", "/tokens/");
-			logger.info("Get token url = " + url);
-			
-			// TODO: Should use do-while loop to go through all pages
-			
-			ResponseEntity<OcpiResponse<List<Token>>> httpResp = restClient.get()
-					.uri(url, Map.of("limit", 50, "date_from", fromLast30Days))
-					.header("Authorization", "Token " + encodedToken)
-					.retrieve()
-					.toEntity(new ParameterizedTypeReference<>() {});	// Let Java do the type inference
-			
-			List<String> header = httpResp.getHeaders().get("X-Total-Count");
-			if (header != null && header.size() > 0) {
-				logger.info("X-Total-Count = {}", httpResp.getHeaders().get("X-Total-Count").get(0));
-			}
-			
-			header = httpResp.getHeaders().get("Link");
-			if (header != null && header.size() > 0) {
-				logger.info("Link = {}", httpResp.getHeaders().get("Link").get(0));
-			}
-			
-			header = httpResp.getHeaders().get("X-Limit");
-			if (header != null && header.size() > 0) {
-				logger.info("X-Limit = {}", httpResp.getHeaders().get("X-Limit").get(0));
-			}
-			
-			OcpiResponse<List<Token>> ocpiResp = httpResp.getBody();
-			List<Token> data = ocpiResp.getData();
-			Iterator<Token> iter = data.iterator();
-			
-			logger.info("Token data acquired, updating local storage");
-			
-			// synchronized (this.tokens) {
-			
-			// this.tokens.clear();
-			
-			while (iter.hasNext()) {
-				Token incomingToken = iter.next();
-				String key = String.format("%s:%s:%s:%s", incomingToken.getCountryCode(), incomingToken.getPartyId(), incomingToken.getUid(), incomingToken.getTokenType());
+		// TODO: Get URL from version details instead
+		String url = serverCredentialUrl.replace("/credentials", "/tokens/");
+		Map<String, Object> getParams = new HashMap<String, Object>();
+		getParams.put("limit", 200);
+		getParams.put("date_from", fromLast30Days);
+		
+		int exceptionCount = 0;
+		
+		do {
+			try {
+				logger.info("Get token url = " + url);
 				
-				Token existing = this.tokens.get(key);
-				if (existing == null) {
-					this.tokens.put(key, incomingToken);
-					++tokenAdded;
+				// TODO: Do not rely on sanity of link URL and total count returned by server
+				
+				ResponseEntity<OcpiResponse<List<Token>>> httpResp = restClient.get()
+						.uri(url, getParams)
+						.header("Authorization", "Token " + encodedToken)
+						.retrieve()
+						.toEntity(new ParameterizedTypeReference<>() {});	// Let Java do the type inference
+				
+				// Only need time range in first iteration
+				getParams.remove("date_from");
+				
+				List<String> header = httpResp.getHeaders().get("X-Total-Count");
+				int totalTokenCount = 0;
+				if (header != null && header.size() > 0) {
+					totalTokenCount = Integer.parseInt(header.get(0));
+					logger.info("X-Total-Count = {}", totalTokenCount);
 				}
-				else if (incomingToken.getLastUpdated() != null) {
-					if (incomingToken.getLastUpdated().getTime() > existing.getLastUpdated().getTime()) {
+				
+				header = httpResp.getHeaders().get("Link");
+				if (header != null && header.size() > 0) {
+					
+					// TODO: Handle parse error
+					url = header.get(0);
+					url = url.substring(url.indexOf("<") + 1, url.indexOf(">"));	
+					logger.info("Next page URL = {}", httpResp.getHeaders().get("Link").get(0));					
+				}
+				else {
+						url = null;
+						logger.info("Next page URL not found in response header, this is last iteration");
+				}
+				
+				header = httpResp.getHeaders().get("X-Limit");
+				if (header != null && header.size() > 0) {
+					logger.info("X-Limit = {}", httpResp.getHeaders().get("X-Limit").get(0));
+				}
+				
+				OcpiResponse<List<Token>> ocpiResp = httpResp.getBody();
+				List<Token> data = ocpiResp.getData();
+				Iterator<Token> iter = data.iterator();
+				
+				logger.info("Token data acquired, updating local storage");
+				
+				// synchronized (this.tokens) {
+				
+				// this.tokens.clear();
+				
+				while (iter.hasNext()) {
+					Token incomingToken = iter.next();
+					String key = String.format("%s:%s:%s:%s", incomingToken.getCountryCode(), incomingToken.getPartyId(), incomingToken.getUid(), incomingToken.getTokenType());
+					
+					Token existing = this.tokens.get(key);
+					if (existing == null) {
 						this.tokens.put(key, incomingToken);
 						++tokenAdded;
 					}
+					else if (incomingToken.getLastUpdated() != null) {
+						if (incomingToken.getLastUpdated().getTime() > existing.getLastUpdated().getTime()) {
+							this.tokens.put(key, incomingToken);
+							++tokenAdded;
+						}
+						else {
+							logger.warn("Incoming token {} is not newer then existing {}, ignored", incomingToken, existing);
+							++tokenIgnored;
+						}
+					}
 					else {
-						logger.warn("Incoming token {} is not newer then existing {}, ignored", incomingToken, existing);
+						logger.warn("Incoming token {} has null last updated field, ignored", incomingToken);
 						++tokenIgnored;
 					}
-				}
-				else {
-					logger.warn("Incoming token {} has null last updated field, ignored", incomingToken);
-					++tokenIgnored;
+					
+					++tokenProcessed;
+					if (tokenProcessed % 100 == 0) {
+						logger.info("Processed {} tokens...", tokenProcessed);
+					}
+	
+					Thread.sleep(30);
 				}
 				
-				++tokenProcessed;
-				if (tokenProcessed % 100 == 0) {
-					logger.info("Processed {} tokens...", tokenProcessed);
+				// TODO: Device better infinite loop prevention
+				if (tokenProcessed >= totalTokenCount) {
+					logger.info("tokenProcessed ({}) >= totalTokenCount ({}), this is last iteration", tokenProcessed, totalTokenCount);
+					url = null;
 				}
-
-				Thread.sleep(30);
+			}
+			catch (Exception ex) {
+				++exceptionCount;
+				logger.error("Error when pulling tokens from server, abort current page");
+				logger.error(ex.getMessage());
+				ex.printStackTrace();
+				
+				if (exceptionCount >= MAX_PULL_TOKEN_EXCEPTION) {
+					logger.error("Too many exceptions ocurred ({}), abort whole operation", exceptionCount);
+					url = null;
+				}
+			}
+			finally {
+				logger.info("Processed {} tokens, now has {} local tokens", tokenAdded, this.tokens.mappingCount());
 			}
 		}
-		catch (Exception ex) {
-			
-			logger.error("Error when pulling tokens from server, abort");
-			logger.error(ex.getMessage());
-			ex.printStackTrace();
+		while (url != null);
+		
+		synchronized (this.tokenSyncLock) {
+			this.isPullingTokenFromServer = false;
 		}
-		finally {
-			logger.info("Processed {} tokens, now has {} tokens", tokenAdded, this.tokens.mappingCount());
-			synchronized (this.tokenSyncLock) {
-				this.isPullingTokenFromServer = false;
-			}
-			logger.info("Token pull statistics: tokenProcessed = {}, tokenAdded = {}, tokenIgnored = {}", tokenProcessed, tokenAdded, tokenIgnored);
-		}
+		logger.info("Token pull statistics: tokenProcessed = {}, tokenAdded = {}, tokenIgnored = {}", tokenProcessed, tokenAdded, tokenIgnored);
 	}
 }
