@@ -55,11 +55,11 @@ public class OcpiTokenService {
 		return null;
 	}
 	
-	public Token upsertToken(String countryCode, String partyId, String tokenUid, TokenType type, Token incomingToken) {
+	public void upsertToken(String countryCode, String partyId, String tokenUid, TokenType type, Token incomingToken) {
 
 		// OCPI specification allows and expects concurrent token update. Make a note when this occurs.
 		if (this.isPullingTokenFromServer) {
-			logger.warn("Upserting token while batch pull is in progress");
+			logger.warn("Upsert token invoked while batch pull is in progress");
 		}
 		
 		String key = String.format("%s:%s:%s:%s", countryCode, partyId, tokenUid, type);
@@ -68,17 +68,14 @@ public class OcpiTokenService {
 		if (replaced == null) {
 			this.tokens.put(key, incomingToken);
 			logger.info("New token inserted {}", incomingToken);
-			return null;
 		}
 		else if (incomingToken.getLastUpdated().getTime() > replaced.getLastUpdated().getTime()) {
 			this.tokens.put(key, incomingToken);
 			logger.info("Token {} is replaced by {}", replaced, incomingToken);
-			return replaced;
 		}
 		
 		// TODO: No update, what to do? Returning null is wrong as it means new token inserted above
-		logger.info("Incoming token {} is older than existing, not updating", incomingToken);
-		return null;
+		logger.warn("Incoming token {} is older than existing, not updating", incomingToken);
 	}
 	
 	public Collection<Token> getAllTokens() {

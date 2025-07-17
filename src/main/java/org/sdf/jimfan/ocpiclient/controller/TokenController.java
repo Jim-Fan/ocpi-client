@@ -84,19 +84,37 @@ public class TokenController {
 		
 		// TODO: Validate params
 		
-		// TODO: Relying on nullity of result is incorrect. Correct this.
-		Token replacedToken = this.tokenService.upsertToken(countryCode, partyId, tokenUid, type, incomingToken);
+		Token tokenToReplace = this.tokenService.findToken(countryCode, partyId, tokenUid, type);
 		
-		if (replacedToken != null) {
-			response.setStatus(HttpStatus.OK.value());
-			logger.info("Token replaced = {}", replacedToken);
+		if (incomingToken.getLastUpdated() == null) {
+			
+			logger.info("last_updated field missing in incoming token", tokenToReplace);
+			response.setStatus(HttpStatus.BAD_REQUEST.value());
+			return new OcpiResponse<Object>(null, 2001, "last_updated field missing", new Date());
+		}
+		else if (tokenToReplace != null) {
+			
+			if (incomingToken.getLastUpdated().getTime() < tokenToReplace.getLastUpdated().getTime()) {
+				
+				logger.warn("Incoming token is old than existing one ({} vs {}), no further update", incomingToken.getLastUpdated(), tokenToReplace.getLastUpdated());
+				response.setStatus(HttpStatus.CONFLICT.value());
+				return new OcpiResponse<Object>(null, 2000, "Incoming token is older than existing token in system", new Date());
+			}
+			else {
+				
+				this.tokenService.upsertToken(countryCode, partyId, tokenUid, type, incomingToken);
+				response.setStatus(HttpStatus.OK.value());
+				logger.info("Token replaced = {}", tokenToReplace);
+				return new OcpiResponse<Object>(null, 1000, "Token replaced", new Date());
+			}
 		}
 		else {
+					
+			this.tokenService.upsertToken(countryCode, partyId, tokenUid, type, incomingToken);
 			response.setStatus(HttpStatus.CREATED.value());
 			logger.info("Token created");
+			return new OcpiResponse<Object>(null, 1000, "Token created", new Date());
 		}
-		
-		return new OcpiResponse<Object>(null, 1000, (replacedToken != null ? "Token replaced" : "Token created"), new Date());
 	}
 	
 	@PatchMapping("/ocpi/2.2.1/tokens/{countryCode}/{partyId}/{tokenUid}")
