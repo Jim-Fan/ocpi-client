@@ -2,7 +2,6 @@ package org.sdf.jimfan.ocpiclient.controller;
 
 import org.sdf.jimfan.ocpiclient.service.OcpiCredentialService;
 import org.sdf.jimfan.ocpiclient.service.OcpiLocationService;
-import org.sdf.jimfan.ocpiclient.service.OcpiSessionService;
 import org.sdf.jimfan.ocpiclient.service.OcpiTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
