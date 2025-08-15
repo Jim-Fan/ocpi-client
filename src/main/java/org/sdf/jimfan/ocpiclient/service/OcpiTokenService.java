@@ -78,6 +78,39 @@ public class OcpiTokenService {
 		logger.warn("Incoming token {} is older than existing, not updating", incomingToken);
 	}
 	
+	public String authoriseToken(String tokenType, String tokenUid) {
+		return this.authoriseToken(TokenType.valueOf(tokenType), tokenUid);
+	}
+	
+	public String authoriseToken(TokenType tokenType, String tokenUid) {
+		String serverCredentialUrl = this.configService.getTheirOcpiCredentialsUrl();
+		String partyId = this.configService.getMyOcpiPartyId();
+		String countryCode = this.configService.getMyOcpiCountryCode();
+		String encodedToken = this.configService.getMyOcpiCredentialTokenEncoded();
+		
+		RestClient restClient = RestClient.create();
+		String url = serverCredentialUrl.replace("/credentials", "/tokens/");
+		url = String.format("%s%s/authorize?type=%s", url, tokenUid, tokenType.toString());
+		
+		// Does it work in MSP I am working with, if:
+		// 1 ) Location omitted           => server-side runtime error
+		// 2 ) Location is in other CPO	  => not valid
+		Map<String, Object> locationReference = Map.of(
+				"location_id", "GB-JIM-LOC1",	// Reading
+				"evse_uids", new String[] { "c410f411-ee01-4e33-a0ad-4d86f678bfd1" },
+				"connector_ids", new String[] { "512f421f-351a-45a6-bf26-98661b55a7e8" }
+				);
+		ResponseEntity<String> httpResp = restClient.post()
+				.uri(url)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Token " + encodedToken)
+				.body(locationReference)
+				.retrieve()
+				.toEntity(new ParameterizedTypeReference<>() {});	// Let Java do the type inference
+		
+		return httpResp.getBody();
+	}
+	
 	public Collection<Token> getAllTokens() {
 		return this.tokens.values();
 	}

@@ -1,5 +1,6 @@
 package org.sdf.jimfan.ocpiclient.controller;
 
+import org.sdf.jimfan.ocpiclient.model.datatype.TokenType;
 import org.sdf.jimfan.ocpiclient.service.OcpiCredentialService;
 import org.sdf.jimfan.ocpiclient.service.OcpiLocationService;
 import org.sdf.jimfan.ocpiclient.service.OcpiTokenService;
@@ -8,6 +9,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import org.slf4j.Logger;
@@ -63,6 +65,20 @@ public class OperationController {
 		try {
 			this.tokenService.pullTokensFromServer();
 			return "OK";
+		}
+		catch (Exception ex) {
+			return ex.getMessage();
+		}
+	}
+	
+	@GetMapping("/op/authorise-token")
+	public String authoriseToken(
+			@RequestParam(required = false, defaultValue = "RFID") String tokenType,
+			@RequestParam(required = true) String uid) {
+		
+		try {
+			String result = this.tokenService.authoriseToken(tokenType, uid);
+			return result;
 		}
 		catch (Exception ex) {
 			return ex.getMessage();
