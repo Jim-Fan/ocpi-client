@@ -71,13 +71,13 @@ public class OperationController {
 		}
 	}
 	
-	@GetMapping("/op/authorise-token")
+	@GetMapping("/op/try-authorise-token")
 	public String authoriseToken(
 			@RequestParam(required = false, defaultValue = "RFID") String tokenType,
 			@RequestParam(required = true) String uid) {
 		
 		try {
-			String result = this.tokenService.authoriseToken(tokenType, uid);
+			String result = this.tokenService.tryAuthoriseToken(tokenType, uid);
 			return result;
 		}
 		catch (Exception ex) {

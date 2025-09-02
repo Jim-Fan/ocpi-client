@@ -78,11 +78,17 @@ public class OcpiTokenService {
 		logger.warn("Incoming token {} is older than existing, not updating", incomingToken);
 	}
 	
-	public String authoriseToken(String tokenType, String tokenUid) {
-		return this.authoriseToken(TokenType.valueOf(tokenType), tokenUid);
+	/**
+	 * Handy wrapper to allow string parameter instead of enum
+	 */
+	public String tryAuthoriseToken(String tokenType, String tokenUid) {
+		return this.tryAuthoriseToken(TokenType.valueOf(tokenType), tokenUid);
 	}
 	
-	public String authoriseToken(TokenType tokenType, String tokenUid) {
+	/**
+	 * Request EMSP to authorise a given token
+	 */
+	public String tryAuthoriseToken(TokenType tokenType, String tokenUid) {
 		String serverCredentialUrl = this.configService.getTheirOcpiCredentialsUrl();
 		String partyId = this.configService.getMyOcpiPartyId();
 		String countryCode = this.configService.getMyOcpiCountryCode();
