@@ -1,6 +1,7 @@
 package org.sdf.jimfan.ocpiclient.service;
 
 import org.sdf.jimfan.ocpiclient.model.OcpiResponse;
+import org.sdf.jimfan.ocpiclient.model.datatype.AuthorizationInfo;
 import org.sdf.jimfan.ocpiclient.model.datatype.TokenType;
 import org.sdf.jimfan.ocpiclient.model.token.Token;
 import org.slf4j.Logger;
@@ -106,7 +107,7 @@ public class OcpiTokenService {
 				"evse_uids", new String[] { "c410f411-ee01-4e33-a0ad-4d86f678bfd1" },
 				"connector_ids", new String[] { "512f421f-351a-45a6-bf26-98661b55a7e8" }
 				);
-		ResponseEntity<String> httpResp = restClient.post()
+		ResponseEntity<OcpiResponse<AuthorizationInfo>> httpResponse = restClient.post()
 				.uri(url)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Token " + encodedToken)
@@ -114,7 +115,8 @@ public class OcpiTokenService {
 				.retrieve()
 				.toEntity(new ParameterizedTypeReference<>() {});	// Let Java do the type inference
 		
-		return httpResp.getBody();
+		OcpiResponse<AuthorizationInfo> ocpiResponse = httpResponse.getBody();
+		return ocpiResponse.toString();
 	}
 	
 	public Collection<Token> getAllTokens() {
