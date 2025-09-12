@@ -1,5 +1,7 @@
 package org.sdf.jimfan.ocpiclient.controller;
 
+import org.sdf.jimfan.ocpiclient.model.OcpiResponse;
+import org.sdf.jimfan.ocpiclient.model.datatype.AuthorizationInfo;
 import org.sdf.jimfan.ocpiclient.model.datatype.TokenType;
 import org.sdf.jimfan.ocpiclient.service.OcpiCredentialService;
 import org.sdf.jimfan.ocpiclient.service.OcpiLocationService;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -71,14 +74,14 @@ public class OperationController {
 		}
 	}
 	
-	@GetMapping("/op/try-authorise-token")
+	@GetMapping(value="/op/try-authorise-token", produces="application/json")
 	public String authoriseToken(
-			@RequestParam(required = false, defaultValue = "RFID") String tokenType,
-			@RequestParam(required = true) String uid) {
+			@RequestParam(required=false, defaultValue="RFID") String tokenType,
+			@RequestParam(required=true) String uid) {
 		
 		try {
-			String result = this.tokenService.tryAuthoriseToken(tokenType, uid);
-			return result;
+			OcpiResponse<AuthorizationInfo> authResponse = this.tokenService.tryAuthoriseToken(tokenType, uid);
+			return authResponse.toString();
 		}
 		catch (Exception ex) {
 			return ex.getMessage();

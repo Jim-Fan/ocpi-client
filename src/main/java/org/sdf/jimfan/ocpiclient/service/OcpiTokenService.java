@@ -82,14 +82,14 @@ public class OcpiTokenService {
 	/**
 	 * Handy wrapper to allow string parameter instead of enum
 	 */
-	public String tryAuthoriseToken(String tokenType, String tokenUid) {
+	public OcpiResponse<AuthorizationInfo> tryAuthoriseToken(String tokenType, String tokenUid) {
 		return this.tryAuthoriseToken(TokenType.valueOf(tokenType), tokenUid);
 	}
 	
 	/**
 	 * Request EMSP to authorise a given token
 	 */
-	public String tryAuthoriseToken(TokenType tokenType, String tokenUid) {
+	public OcpiResponse<AuthorizationInfo> tryAuthoriseToken(TokenType tokenType, String tokenUid) {
 		String serverCredentialUrl = this.configService.getTheirOcpiCredentialsUrl();
 		String partyId = this.configService.getMyOcpiPartyId();
 		String countryCode = this.configService.getMyOcpiCountryCode();
@@ -115,8 +115,7 @@ public class OcpiTokenService {
 				.retrieve()
 				.toEntity(new ParameterizedTypeReference<>() {});	// Let Java do the type inference
 		
-		OcpiResponse<AuthorizationInfo> ocpiResponse = httpResponse.getBody();
-		return ocpiResponse.toString();
+		return httpResponse.getBody();
 	}
 	
 	public Collection<Token> getAllTokens() {
