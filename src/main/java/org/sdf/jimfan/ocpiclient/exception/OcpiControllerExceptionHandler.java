@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,9 +22,9 @@ import jakarta.servlet.http.HttpServletResponse;
  * [2] https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html#mvc-ann-exceptionhandler-args
  */
 @RestControllerAdvice
-public class OcpiControllerAdvice {
+public class OcpiControllerExceptionHandler {
 
-	private final Logger logger = LoggerFactory.getLogger(OcpiControllerAdvice.class);
+	private final Logger logger = LoggerFactory.getLogger(OcpiControllerExceptionHandler.class);
 	
 	/**
 	 * Generic, catch-all exception handler
@@ -34,6 +36,14 @@ public class OcpiControllerAdvice {
 		ex.printStackTrace();
 		response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		OcpiResponse<String> ocpiResponse = new OcpiResponse<String>(null, 3000, "Unexpected error, please contact system administrator", new Date());
+		return ocpiResponse;
+	}
+	
+	@ExceptionHandler(NoResourceFoundException.class)
+	public OcpiResponse<String> handleNoHandlerFound(NoResourceFoundException ex, HttpServletResponse response) {
+		logger.error(ex.getMessage());
+		response.setStatus(HttpStatus.NOT_FOUND.value());
+		OcpiResponse<String> ocpiResponse = new OcpiResponse<String>(null, 2000, "Requested resource does not exist", new Date());
 		return ocpiResponse;
 	}
 }
