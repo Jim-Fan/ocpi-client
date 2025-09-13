@@ -1,5 +1,6 @@
 package org.sdf.jimfan.ocpiclient.model.location;
 
+import org.sdf.jimfan.ocpiclient.model.JsonFormattable;
 import org.sdf.jimfan.ocpiclient.model.credential.BusinessDetails;
 import org.sdf.jimfan.ocpiclient.model.datatype.AdditionalGeoLocation;
 import org.sdf.jimfan.ocpiclient.model.datatype.CountryCode;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 
-public class Location {
+public class Location extends JsonFormattable {
 
 	@JsonProperty("country_code")
 	private String countryCode;

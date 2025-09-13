@@ -2,7 +2,6 @@ package org.sdf.jimfan.ocpiclient.controller;
 
 import org.sdf.jimfan.ocpiclient.model.OcpiResponse;
 import org.sdf.jimfan.ocpiclient.model.datatype.AuthorizationInfo;
-import org.sdf.jimfan.ocpiclient.model.datatype.TokenType;
 import org.sdf.jimfan.ocpiclient.service.OcpiCredentialService;
 import org.sdf.jimfan.ocpiclient.service.OcpiLocationService;
 import org.sdf.jimfan.ocpiclient.service.OcpiTokenService;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,7 +52,7 @@ public class OperationController {
 	public String pushLocation() {
 		
 		try {
-			this.locationService.pushLocationToServer();
+			this.locationService.putLocationToEMSP();
 			return "OK";
 		}
 		catch (Exception ex) {
