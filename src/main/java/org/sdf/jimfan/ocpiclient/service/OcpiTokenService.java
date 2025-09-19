@@ -3,6 +3,9 @@ package org.sdf.jimfan.ocpiclient.service;
 import org.sdf.jimfan.ocpiclient.model.OcpiResponse;
 import org.sdf.jimfan.ocpiclient.model.datatype.AuthorizationInfo;
 import org.sdf.jimfan.ocpiclient.model.datatype.TokenType;
+import org.sdf.jimfan.ocpiclient.model.location.Connector;
+import org.sdf.jimfan.ocpiclient.model.location.EVSE;
+import org.sdf.jimfan.ocpiclient.model.location.Location;
 import org.sdf.jimfan.ocpiclient.model.token.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +42,9 @@ public class OcpiTokenService {
 	
 	@Autowired
 	private OcpiConfigService configService;
+	
+	@Autowired
+	private OcpiLocationService locationService;
 
 	private ConcurrentHashMap<String, Token> tokens = new ConcurrentHashMap<String, Token>();
 	
@@ -87,7 +93,7 @@ public class OcpiTokenService {
 	}
 	
 	/**
-	 * Request EMSP to authorise a given token
+	 * Request EMSP to authorise a given token against the only one location
 	 */
 	public OcpiResponse<AuthorizationInfo> tryAuthoriseToken(TokenType tokenType, String tokenUid) {
 		String serverCredentialUrl = this.configService.getTheirOcpiCredentialsUrl();
@@ -99,13 +105,16 @@ public class OcpiTokenService {
 		String url = serverCredentialUrl.replace("/credentials", "/tokens/");
 		url = String.format("%s%s/authorize?type=%s", url, tokenUid, tokenType.toString());
 		
-		// Does it work in MSP I am working with, if:
-		// 1 ) Location omitted           => server-side runtime error
+		// EMSP's response on:
+		// 1 ) Location omitted           => server-side runtime error, this is against OCPI requirement
 		// 2 ) Location is in other CPO	  => not valid
+		Location location = this.locationService.getLocation();
+		EVSE evse = location.getEvses().get(0);
+		Connector connector = evse.getConnectors().get(0);
 		Map<String, Object> locationReference = Map.of(
-				"location_id", "GB-JIM-LOC1",	// Reading
-				"evse_uids", new String[] { "c410f411-ee01-4e33-a0ad-4d86f678bfd1" },
-				"connector_ids", new String[] { "512f421f-351a-45a6-bf26-98661b55a7e8" }
+				"location_id", location.getLocationId(),
+				"evse_uids", new String[] { evse.getUid() },
+				"connector_ids", new String[] { connector.getId() }
 				);
 		ResponseEntity<OcpiResponse<AuthorizationInfo>> httpResponse = restClient.post()
 				.uri(url)
@@ -113,7 +122,7 @@ public class OcpiTokenService {
 				.header("Authorization", "Token " + encodedToken)
 				.body(locationReference)
 				.retrieve()
-				.toEntity(new ParameterizedTypeReference<>() {});	// Let Java do the type inference
+				.toEntity(new ParameterizedTypeReference<>() {});
 		
 		return httpResponse.getBody();
 	}
