@@ -1,10 +1,11 @@
 package org.sdf.jimfan.ocpiclient.model.datatype;
 
+import org.sdf.jimfan.ocpiclient.model.JsonFormattable;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-public class EnergyMix {
+public class EnergyMix extends JsonFormattable {
 
 	@JsonProperty("is_green_energy")
 	private Boolean isGreenEnergy;
