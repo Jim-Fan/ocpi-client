@@ -12,7 +12,7 @@ public class PriceComponent extends JsonFormattable {
 	private TariffDimensionType type;
 	
 	@JsonProperty("price")
-	private TariffDimensionType price;
+	private Float price;
 	
 	@JsonProperty("vat")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
@@ -21,7 +21,7 @@ public class PriceComponent extends JsonFormattable {
 	@JsonProperty("step_size")
 	private Integer stepSize;
 	
-	public PriceComponent(TariffDimensionType type, TariffDimensionType price, Integer stepSize) {
+	public PriceComponent(TariffDimensionType type, Float price, Integer stepSize) {
 		this.type = type;
 		this.price = price;
 		this.stepSize = stepSize;
@@ -35,11 +35,11 @@ public class PriceComponent extends JsonFormattable {
 		this.type = type;
 	}
 
-	public TariffDimensionType getPrice() {
+	public Float getPrice() {
 		return price;
 	}
 
-	public void setPrice(TariffDimensionType price) {
+	public void setPrice(Float price) {
 		this.price = price;
 	}
 

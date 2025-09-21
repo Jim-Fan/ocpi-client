@@ -58,6 +58,9 @@ public class OcpiLocationService {
 	@Autowired
 	private OcpiConfigService configService;
 	
+	@Autowired
+	private OcpiTariffService tariffService;
+	
 	private Location theOneLocation;
 	
 	@PostConstruct
@@ -91,6 +94,7 @@ public class OcpiLocationService {
 				120,
 				lastUpdateDate);
 		connector.setMaxElectricPower(connector.getMaxAmperage() * connector.getMaxVoltage());
+		connector.setTariffIds(List.of(this.tariffService.getTariff().getId()));
 		
 		EVSE readingCharger = new EVSE(
 				"c410f411-ee01-4e33-a0ad-4d86f678bfd1",  // uid
@@ -169,7 +173,7 @@ public class OcpiLocationService {
 			}
 			
 			OcpiResponse<Object> ocpiResponse = httpResponse.getBody();
-			if (ocpiResponse.getStatusCode() != 1000) {
+			if (ocpiResponse.getStatusCode() == 1000) {
 				logger.info("Put location response = {}", ocpiResponse);
 			}
 			else {
