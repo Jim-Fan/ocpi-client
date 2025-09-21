@@ -68,8 +68,8 @@ public class OperationController {
 	public String pushTariff() {
 		
 		try {
-			this.tariffService.putTariffToEMSP();
-			return "OK";
+			this.tariffService.putTariffToEMSPAsync();
+			return "Tariff sync initiated";
 		}
 		catch (Exception ex) {
 			return ex.getMessage();
