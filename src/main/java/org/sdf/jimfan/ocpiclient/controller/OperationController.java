@@ -4,6 +4,7 @@ import org.sdf.jimfan.ocpiclient.model.OcpiResponse;
 import org.sdf.jimfan.ocpiclient.model.datatype.AuthorizationInfo;
 import org.sdf.jimfan.ocpiclient.service.OcpiCredentialService;
 import org.sdf.jimfan.ocpiclient.service.OcpiLocationService;
+import org.sdf.jimfan.ocpiclient.service.OcpiTariffService;
 import org.sdf.jimfan.ocpiclient.service.OcpiTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -36,6 +37,9 @@ public class OperationController {
 	@Autowired
 	private OcpiTokenService tokenService;
 	
+	@Autowired
+	private OcpiTariffService tariffService;
+	
 	@GetMapping("/op/handshake")
 	public String performHandshake() {
 		
@@ -53,6 +57,18 @@ public class OperationController {
 		
 		try {
 			this.locationService.putLocationToEMSP();
+			return "OK";
+		}
+		catch (Exception ex) {
+			return ex.getMessage();
+		}
+	}
+	
+	@GetMapping("/op/push-tariff")
+	public String pushTariff() {
+		
+		try {
+			this.tariffService.putTariffToEMSP();
 			return "OK";
 		}
 		catch (Exception ex) {
