@@ -17,6 +17,7 @@ public class OcpiResponse<T> extends JsonFormattable {
 	private int statusCode;
 	
 	@JsonProperty("status_message")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String statusMessage;
 	
 	@JsonProperty("timestamp")

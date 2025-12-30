@@ -11,7 +11,7 @@ public class OcpiException extends Throwable {
 	private final String body;
 	
 	public OcpiException(HttpStatusCode statusCode, HttpHeaders headers, String body) {
-		super();
+		super(body);
 		this.statusCode = statusCode;
 		this.headers = headers;
 		this.body = body;
