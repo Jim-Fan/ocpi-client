@@ -1,26 +1,27 @@
 package org.sdf.jimfan.ocpiclient.model.datatype;
 
+import java.time.ZonedDateTime;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Date;
 
 public class ExceptionPeriod {
 
 	@JsonProperty("period_begin")
-	private Date periodBegin;
+	private ZonedDateTime periodBegin;
 	
 	@JsonProperty("period_end")
-	private Date periodEnd;
+	private ZonedDateTime periodEnd;
 
-	public ExceptionPeriod(Date periodBegin, Date periodEnd) {
+	public ExceptionPeriod(ZonedDateTime periodBegin, ZonedDateTime periodEnd) {
 		this.periodBegin = periodBegin;
 		this.periodEnd = periodEnd;
 	}
 
-	public Date getPeriodBegin() {
+	public ZonedDateTime getPeriodBegin() {
 		return periodBegin;
 	}
 	
-	public Date getPeriodEnd() {
+	public ZonedDateTime getPeriodEnd() {
 		return periodEnd;
 	}
 }

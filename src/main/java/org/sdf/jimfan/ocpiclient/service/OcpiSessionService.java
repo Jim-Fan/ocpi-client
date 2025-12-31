@@ -1,12 +1,5 @@
 package org.sdf.jimfan.ocpiclient.service;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Currency;
-import java.util.Date;
-import java.util.UUID;
-
 import org.sdf.jimfan.ocpiclient.exception.OcpiException;
 import org.sdf.jimfan.ocpiclient.model.datatype.AuthMethod;
 import org.sdf.jimfan.ocpiclient.model.datatype.CountryCode;
@@ -26,6 +19,12 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.time.ZonedDateTime;
+import java.util.Currency;
+import java.util.UUID;
 
 @Service
 @Scope(value=WebApplicationContext.SCOPE_APPLICATION)
@@ -111,8 +110,8 @@ public class OcpiSessionService {
 		CountryCode countryCode = CountryCode.valueOf(this.configService.getMyOcpiCountryCode());
 		String partyId = this.configService.getMyOcpiPartyId();
 		String sessionId = UUID.randomUUID().toString();
-		Date sessionStartDatetime = new Date();
-		Date sessionLastUpdateDatetime = sessionStartDatetime;
+		ZonedDateTime sessionStartDatetime = ZonedDateTime.now();
+		ZonedDateTime sessionLastUpdateDatetime = sessionStartDatetime;
 		Float energyConsumed = 0f;
 		Currency currency = Currency.getInstance("GBP");
 		SessionStatus sessionStatus = SessionStatus.PENDING;

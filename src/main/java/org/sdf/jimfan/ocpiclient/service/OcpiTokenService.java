@@ -18,13 +18,13 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriBuilderFactory;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,7 +70,7 @@ public class OcpiTokenService {
 			this.tokens.put(key, incomingToken);
 			logger.info("New token inserted {}", incomingToken);
 		}
-		else if (incomingToken.getLastUpdated().getTime() > replaced.getLastUpdated().getTime()) {
+		else if (incomingToken.getLastUpdated().isBefore(replaced.getLastUpdated())) {
 			this.tokens.put(key, incomingToken);
 			logger.info("Token {} is replaced by {}", replaced, incomingToken);
 		}
@@ -141,9 +141,15 @@ public class OcpiTokenService {
 		
 		RestClient restClient = RestClient.create();
 		
+		/*
 		Date now = new Date();
 		String fromLast30Days = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'").format(
 				new Date(now.getTime() - (1000 * 60 * 60 * 24 * 30)));
+		*/
+		ZonedDateTime now = ZonedDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mmZ");
+		String fromLast30Days = formatter.format(now.minus(30, ChronoUnit.DAYS));
+		logger.info("fromLast30Days = {}", fromLast30Days);
 		int tokenAdded = 0;
 		int tokenProcessed = 0;
 		int tokenIgnored = 0;
@@ -216,7 +222,7 @@ public class OcpiTokenService {
 						++tokenAdded;
 					}
 					else if (incomingToken.getLastUpdated() != null) {
-						if (incomingToken.getLastUpdated().getTime() > existing.getLastUpdated().getTime()) {
+						if (incomingToken.getLastUpdated().isBefore(existing.getLastUpdated())) {
 							this.tokens.put(key, incomingToken);
 							++tokenAdded;
 						}

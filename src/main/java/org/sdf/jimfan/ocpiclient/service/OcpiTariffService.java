@@ -17,8 +17,8 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
 import java.util.Currency;
-import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -45,7 +45,7 @@ public class OcpiTariffService {
 		String countryCode = this.configService.getMyOcpiCountryCode();
 		String partyId = this.configService.getMyOcpiPartyId();
 		TimeZone UTC = TimeZone.getTimeZone("UTC");
-		Date lastUpdateDate = new Date();
+		ZonedDateTime lastUpdateDate = ZonedDateTime.now();
 		
 		PriceComponent energyComponent = new PriceComponent(TariffDimensionType.ENERGY, 0.5F, 1);
 		energyComponent.setVat(20.0F);

@@ -2,7 +2,6 @@ package org.sdf.jimfan.ocpiclient.controller;
 
 import org.sdf.jimfan.ocpiclient.model.OcpiResponse;
 import org.sdf.jimfan.ocpiclient.model.tariff.*;
-import org.sdf.jimfan.ocpiclient.service.OcpiLocationService;
 import org.sdf.jimfan.ocpiclient.service.OcpiTariffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -17,7 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,13 +38,18 @@ public class TariffController {
 	public OcpiResponse<List<Tariff>> getTariffs(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@RequestParam(name = "date_from", required = false) Date dateFrom,
-			@RequestParam(name = "date_to", required = false) Date dateTo,
+			@RequestParam(name = "date_from", required = false) ZonedDateTime dateFrom,
+			@RequestParam(name = "date_to", required = false) ZonedDateTime dateTo,
 			@RequestParam(name = "offset", required = false) Integer offset,
 			@RequestParam(name = "limit", required = false) Integer limit) {
 		
+		logger.info("dateFrom = {}", dateFrom);
+		logger.info("dateTo = {}", dateTo);
+		logger.info("offset = {}", offset);
+		logger.info("limit = {}", limit);
+		
 		List<Tariff> tariffs = List.of(this.tariffService.getTariff());
-		OcpiResponse<List<Tariff>> ocpiResponse = new OcpiResponse<List<Tariff>>(tariffs, 1000, "OK", new Date());
+		OcpiResponse<List<Tariff>> ocpiResponse = new OcpiResponse<List<Tariff>>(tariffs, 1000, "OK", ZonedDateTime.now());
 		
 		// Potential for code re-use
 		String requestId = request.getHeader("X-Request-ID");

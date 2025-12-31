@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.URL;
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.Currency;
 import java.util.List;
 
@@ -55,12 +55,12 @@ public class Tariff extends JsonFormattable {
 	@JsonProperty("start_date_time")
 	@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private Date startDateTime;
+	private ZonedDateTime startDateTime;
 	
 	@JsonProperty("end_date_time")
 	@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private Date endDateTime;
+	private ZonedDateTime endDateTime;
 	
 	@JsonProperty("energy_mix")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
@@ -68,9 +68,9 @@ public class Tariff extends JsonFormattable {
 	
 	@JsonProperty("last_updated")
 	@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
-	private Date lastUpdated;
+	private ZonedDateTime lastUpdated;
 	
-	public Tariff(CountryCode countryCode, String partyId, String id, Currency currency, List<TariffElement> elements, Date lastUpdated) {
+	public Tariff(CountryCode countryCode, String partyId, String id, Currency currency, List<TariffElement> elements, ZonedDateTime lastUpdated) {
 		this.countryCode = countryCode;
 		this.partyId = partyId;
 		this.id = id;
@@ -159,19 +159,19 @@ public class Tariff extends JsonFormattable {
 		this.elements = elements;
 	}
 
-	public Date getStartDateTime() {
+	public ZonedDateTime getStartDateTime() {
 		return startDateTime;
 	}
 
-	public void setStartDateTime(Date startDateTime) {
+	public void setStartDateTime(ZonedDateTime startDateTime) {
 		this.startDateTime = startDateTime;
 	}
 
-	public Date getEndDateTime() {
+	public ZonedDateTime getEndDateTime() {
 		return endDateTime;
 	}
 
-	public void setEndDateTime(Date endDateTime) {
+	public void setEndDateTime(ZonedDateTime endDateTime) {
 		this.endDateTime = endDateTime;
 	}
 
@@ -183,11 +183,11 @@ public class Tariff extends JsonFormattable {
 		this.energyMix = energyMix;
 	}
 
-	public Date getLastUpdated() {
+	public ZonedDateTime getLastUpdated() {
 		return lastUpdated;
 	}
 
-	public void setLastUpdated(Date lastUpdated) {
+	public void setLastUpdated(ZonedDateTime lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
 }

@@ -1,5 +1,7 @@
 package org.sdf.jimfan.ocpiclient.model.token;
 
+import java.time.ZonedDateTime;
+
 import org.sdf.jimfan.ocpiclient.model.JsonFormattable;
 import org.sdf.jimfan.ocpiclient.model.datatype.CountryCode;
 import org.sdf.jimfan.ocpiclient.model.datatype.EnergyContract;
@@ -11,7 +13,6 @@ import org.sdf.jimfan.ocpiclient.model.datatype.WhitelistType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Date;
 
 public class Token extends JsonFormattable {
 	
@@ -61,10 +62,10 @@ public class Token extends JsonFormattable {
 	
 	@JsonProperty("last_updated")
 	@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
-	private Date lastUpdated;
+	private ZonedDateTime lastUpdated;
 
 	public Token(CountryCode countryCode, String partyId, String uid, TokenType tokenType, String contractId,
-			String issuer, Boolean valid, WhitelistType whitelist, Date lastUpdated) {
+			String issuer, Boolean valid, WhitelistType whitelist, ZonedDateTime lastUpdated) {
 		this.countryCode = countryCode;
 		this.partyId = partyId;
 		this.uid = uid;
@@ -180,11 +181,11 @@ public class Token extends JsonFormattable {
 		this.energyContract = energyContract;
 	}
 
-	public Date getLastUpdated() {
+	public ZonedDateTime getLastUpdated() {
 		return lastUpdated;
 	}
 
-	public void setLastUpdated(Date lastUpdated) {
+	public void setLastUpdated(ZonedDateTime lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
 }

@@ -16,7 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.Date;
+
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,14 +53,14 @@ public class LocationController {
 	public OcpiResponse<List<Location>> getLocations(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@RequestParam(name = "date_from", required = false) Date dateFrom,
-			@RequestParam(name = "date_to", required = false) Date dateTo,
+			@RequestParam(name = "date_from", required = false) ZonedDateTime dateFrom,
+			@RequestParam(name = "date_to", required = false) ZonedDateTime dateTo,
 			@RequestParam(name = "offset", required = false) Integer offset,
 			@RequestParam(name = "limit", required = false) Integer limit) {
 		
 		// Disregard parameters and return the one unconditionally
 		List<Location> locations = List.of(this.locationService.getLocation());
-		OcpiResponse<List<Location>> ocpiResponse = new OcpiResponse<List<Location>>(locations, 1000, "OK", new Date());
+		OcpiResponse<List<Location>> ocpiResponse = new OcpiResponse<List<Location>>(locations, 1000, "OK", ZonedDateTime.now());
 		
 		// Potential for code re-use
 		String requestId = request.getHeader("X-Request-ID");

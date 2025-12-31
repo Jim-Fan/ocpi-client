@@ -16,7 +16,8 @@ import org.sdf.jimfan.ocpiclient.model.datatype.PublishTokenType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Date;
+
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -117,14 +118,14 @@ public class Location extends JsonFormattable {
 	
 	@JsonProperty("last_updated")
 	@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
-	private Date lastUpdated;
+	private ZonedDateTime lastUpdated;
 	
 	
 	/**
 	 * Constructor. Parameters are mandatory fields according to OCPI 2.2.1
 	 */
 	public Location(String countryCode, String partyId, String locationId, Boolean publish, String address, String city,
-			CountryCode country, GeoLocation coordinates, TimeZone timeZone, Date lastUpdated) {
+			CountryCode country, GeoLocation coordinates, TimeZone timeZone, ZonedDateTime lastUpdated) {
 		this.countryCode = countryCode;
 		this.partyId = partyId;
 		this.locationId = locationId;
@@ -338,11 +339,11 @@ public class Location extends JsonFormattable {
 		this.energyMix = energyMix;
 	}
 
-	public Date getLastUpdated() {
+	public ZonedDateTime getLastUpdated() {
 		return lastUpdated;
 	}
 
-	public void setLastUpdated(Date lastUpdated) {
+	public void setLastUpdated(ZonedDateTime lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
 }

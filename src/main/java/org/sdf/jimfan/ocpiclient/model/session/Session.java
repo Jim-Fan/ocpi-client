@@ -11,8 +11,9 @@ import org.sdf.jimfan.ocpiclient.model.token.CdrToken;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.ZonedDateTime;
 import java.util.Currency;
-import java.util.Date;
 import java.util.List;
 
 public class Session extends JsonFormattable {
@@ -28,12 +29,12 @@ public class Session extends JsonFormattable {
 	
 	@JsonProperty("start_date_time")
 	@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
-	private Date startDateTime;
+	private ZonedDateTime startDateTime;
 	
 	@JsonProperty("end_date_time")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
-	private Date endDateTime;
+	private ZonedDateTime endDateTime;
 	
 	@JsonProperty("kwh")
 	private Float kwh;
@@ -78,13 +79,13 @@ public class Session extends JsonFormattable {
 	@JsonProperty("last_updated")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
-	private Date lastUpdated;
+	private ZonedDateTime lastUpdated;
 
 	
-	public Session(CountryCode countryCode, String partyId, String id, Date startDateTime, Float kwh,
+	public Session(CountryCode countryCode, String partyId, String id, ZonedDateTime startDateTime, Float kwh,
 			CdrToken cdrToken, AuthMethod authMethod, String locationId, String evseUid,
 			String connectorId, Currency currency,
-			SessionStatus sessionStatus, Date lastUpdated) {
+			SessionStatus sessionStatus, ZonedDateTime lastUpdated) {
 		this.countryCode = countryCode;
 		this.partyId = partyId;
 		this.id = id;
@@ -124,19 +125,19 @@ public class Session extends JsonFormattable {
 		this.id = id;
 	}
 
-	public Date getStartDateTime() {
+	public ZonedDateTime getStartDateTime() {
 		return startDateTime;
 	}
 
-	public void setStartDateTime(Date startDateTime) {
+	public void setStartDateTime(ZonedDateTime startDateTime) {
 		this.startDateTime = startDateTime;
 	}
 
-	public Date getEndDateTime() {
+	public ZonedDateTime getEndDateTime() {
 		return endDateTime;
 	}
 
-	public void setEndDateTime(Date endDateTime) {
+	public void setEndDateTime(ZonedDateTime endDateTime) {
 		this.endDateTime = endDateTime;
 	}
 
@@ -236,11 +237,11 @@ public class Session extends JsonFormattable {
 		this.sessionStatus = sessionStatus;
 	}
 
-	public Date getLastUpdated() {
+	public ZonedDateTime getLastUpdated() {
 		return lastUpdated;
 	}
 
-	public void setLastUpdated(Date lastUpdated) {
+	public void setLastUpdated(ZonedDateTime lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
 }

@@ -21,13 +21,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 /**
  * OCPI 2.2.1 section 12.2
@@ -63,11 +61,11 @@ public class TokenController {
 		if (result != null) {
 			logger.info("Result = {}", result);
 			response.setStatus(HttpStatus.OK.value());
-			return new OcpiResponse<Token>(result, 1000, "Token found", new Date());
+			return new OcpiResponse<Token>(result, 1000, "Token found", ZonedDateTime.now());
 		}
 		
 		response.setStatus(HttpStatus.NOT_FOUND.value());
-		return new OcpiResponse<Token>(null, 2000, "Token not found", new Date());
+		return new OcpiResponse<Token>(null, 2000, "Token not found", ZonedDateTime.now());
 	}
 	
 	@PutMapping("/ocpi/2.2.1/tokens/{countryCode}/{partyId}/{tokenUid}")
@@ -90,22 +88,22 @@ public class TokenController {
 			
 			logger.info("last_updated field missing in incoming token", tokenToReplace);
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
-			return new OcpiResponse<Object>(null, 2001, "last_updated field missing", new Date());
+			return new OcpiResponse<Object>(null, 2001, "last_updated field missing", ZonedDateTime.now());
 		}
 		else if (tokenToReplace != null) {
 			
-			if (incomingToken.getLastUpdated().getTime() < tokenToReplace.getLastUpdated().getTime()) {
+			if (incomingToken.getLastUpdated().isBefore(tokenToReplace.getLastUpdated())) {
 				
 				logger.warn("Incoming token is old than existing one ({} vs {}), no further update", incomingToken.getLastUpdated(), tokenToReplace.getLastUpdated());
 				response.setStatus(HttpStatus.CONFLICT.value());
-				return new OcpiResponse<Object>(null, 2000, "Incoming token is older than existing token in system", new Date());
+				return new OcpiResponse<Object>(null, 2000, "Incoming token is older than existing token in system", ZonedDateTime.now());
 			}
 			else {
 				
 				this.tokenService.upsertToken(countryCode, partyId, tokenUid, type, incomingToken);
 				response.setStatus(HttpStatus.OK.value());
 				logger.info("Token replaced = {}", tokenToReplace);
-				return new OcpiResponse<Object>(null, 1000, "Token replaced", new Date());
+				return new OcpiResponse<Object>(null, 1000, "Token replaced", ZonedDateTime.now());
 			}
 		}
 		else {
@@ -113,7 +111,7 @@ public class TokenController {
 			this.tokenService.upsertToken(countryCode, partyId, tokenUid, type, incomingToken);
 			response.setStatus(HttpStatus.CREATED.value());
 			logger.info("Token created");
-			return new OcpiResponse<Object>(null, 1000, "Token created", new Date());
+			return new OcpiResponse<Object>(null, 1000, "Token created", ZonedDateTime.now());
 		}
 	}
 	
@@ -133,16 +131,16 @@ public class TokenController {
 		
 		if (token == null || token.getTokenType() != type) {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
-			return new OcpiResponse<Object>(null, 2000, "Token not found", new Date());
+			return new OcpiResponse<Object>(null, 2000, "Token not found", ZonedDateTime.now());
 		}
 		if (payload.last_updated == null) {
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
-			return new OcpiResponse<Object>(null, 2001, "last_updated field missing", new Date());
+			return new OcpiResponse<Object>(null, 2001, "last_updated field missing", ZonedDateTime.now());
 		}
-		if (payload.last_updated.getTime() < token.getLastUpdated().getTime()) {
+		if (payload.last_updated.isBefore(token.getLastUpdated())) {
 			logger.warn("Incoming token is old than existing one ({} vs {}), no further update", payload.last_updated, token.getLastUpdated());
 			response.setStatus(HttpStatus.CONFLICT.value());
-			return new OcpiResponse<Object>(null, 2000, "Incoming token is older than existing token in system", new Date());
+			return new OcpiResponse<Object>(null, 2000, "Incoming token is older than existing token in system", ZonedDateTime.now());
 		}
 		
 		boolean updated = false;
@@ -192,7 +190,7 @@ public class TokenController {
 		}
 		
 		response.setStatus(HttpStatus.OK.value());
-		return new OcpiResponse<Object>(null, 1000, "Token updated", new Date());
+		return new OcpiResponse<Object>(null, 1000, "Token updated", ZonedDateTime.now());
 	}
 	
 	/**
@@ -208,6 +206,6 @@ public class TokenController {
 		public LanguageCode language;
 		public ProfileType default_profile_type;
 		public EnergyContract energy_contract;
-		public Date last_updated;
+		public ZonedDateTime last_updated;
 	}
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 public class OcpiResponse<T> extends JsonFormattable {
 
@@ -22,9 +22,9 @@ public class OcpiResponse<T> extends JsonFormattable {
 	
 	@JsonProperty("timestamp")
 	@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
-	private Date timestamp;
+	private ZonedDateTime timestamp;
 	
-	public OcpiResponse(T data, int statusCode, String statusMessage, Date timestamp) {
+	public OcpiResponse(T data, int statusCode, String statusMessage, ZonedDateTime timestamp) {
 		this.data = data;
 		this.statusCode = statusCode;
 		this.statusMessage = statusMessage;
@@ -43,7 +43,7 @@ public class OcpiResponse<T> extends JsonFormattable {
 		return statusMessage;
 	}
 	
-	public Date getTimestamp() {
+	public ZonedDateTime getTimestamp() {
 		return timestamp;
 	}
 }

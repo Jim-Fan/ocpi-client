@@ -1,8 +1,7 @@
 package org.sdf.jimfan.ocpiclient.model.datatype;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,7 +10,7 @@ public class ChargingPeriod {
 
 	@JsonProperty("start_date_time")
 	@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
-	private Date startDateTime;
+	private ZonedDateTime startDateTime;
 	
 	@JsonProperty("dimensions")
 	private List<CdrDimension> dimensions;
@@ -20,14 +19,14 @@ public class ChargingPeriod {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String tariffId;
 
-	public ChargingPeriod(Date startDateTime, List<CdrDimension> dimensions, String tariffId) {
+	public ChargingPeriod(ZonedDateTime startDateTime, List<CdrDimension> dimensions, String tariffId) {
 		super();
 		this.startDateTime = startDateTime;
 		this.dimensions = dimensions;
 		this.tariffId = tariffId;
 	}
 
-	public Date getStartDateTime() {
+	public ZonedDateTime getStartDateTime() {
 		return startDateTime;
 	}
 

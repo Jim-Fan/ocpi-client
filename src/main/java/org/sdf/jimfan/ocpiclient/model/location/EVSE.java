@@ -1,11 +1,5 @@
 package org.sdf.jimfan.ocpiclient.model.location;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Date;
-import java.util.List;
-
 import org.sdf.jimfan.ocpiclient.model.datatype.Capability;
 import org.sdf.jimfan.ocpiclient.model.datatype.DisplayText;
 import org.sdf.jimfan.ocpiclient.model.datatype.GeoLocation;
@@ -13,6 +7,13 @@ import org.sdf.jimfan.ocpiclient.model.datatype.Image;
 import org.sdf.jimfan.ocpiclient.model.datatype.ParkingRestriction;
 import org.sdf.jimfan.ocpiclient.model.datatype.Status;
 import org.sdf.jimfan.ocpiclient.model.datatype.StatusSchedule;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.ZonedDateTime;
+import java.util.List;
 
 public class EVSE {
 
@@ -75,11 +76,11 @@ public class EVSE {
 	
 	@JsonProperty("last_updated")
 	@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
-	private Date lastUpdated;
+	private ZonedDateTime lastUpdated;
 
 	
 	public EVSE(String uid, String evseId, Status status, List<Connector> connectors, String physicalReference,
-			Date lastUpdated) {
+			ZonedDateTime lastUpdated) {
 		this.uid = uid;
 		this.evseId = evseId;
 		this.status = status;
@@ -184,11 +185,11 @@ public class EVSE {
 		this.images = images;
 	}
 
-	public Date getLastUpdated() {
+	public ZonedDateTime getLastUpdated() {
 		return lastUpdated;
 	}
 
-	public void setLastUpdated(Date lastUpdated) {
+	public void setLastUpdated(ZonedDateTime lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
 }

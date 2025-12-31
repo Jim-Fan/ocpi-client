@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.URL;
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.sdf.jimfan.ocpiclient.model.datatype.ConnectorFormat;
@@ -52,10 +52,10 @@ public class Connector {
 	
 	@JsonProperty("last_updated")
 	@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
-	private Date lastUpdated;
+	private ZonedDateTime lastUpdated;
 
 	public Connector(String id, ConnectorType standard, ConnectorFormat format, PowerType powerType, Integer maxVoltage,
-			Integer maxAmperage, Date lastUpdated) {
+			Integer maxAmperage, ZonedDateTime lastUpdated) {
 		this.id = id;
 		this.standard = standard;
 		this.format = format;
@@ -137,11 +137,11 @@ public class Connector {
 		this.url = url;
 	}
 
-	public Date getLastUpdated() {
+	public ZonedDateTime getLastUpdated() {
 		return lastUpdated;
 	}
 
-	public void setLastUpdated(Date lastUpdated) {
+	public void setLastUpdated(ZonedDateTime lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
 }

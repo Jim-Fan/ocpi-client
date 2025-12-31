@@ -5,9 +5,9 @@ import org.sdf.jimfan.ocpiclient.model.datatype.ReservationRestrictionType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 
 public class TariffRestrictions extends JsonFormattable {

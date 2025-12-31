@@ -23,7 +23,8 @@ import org.springframework.web.context.WebApplicationContext;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.Date;
+
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -71,7 +72,7 @@ public class OcpiLocationService {
 		String countryCode = this.configService.getMyOcpiCountryCode();
 		String partyId = this.configService.getMyOcpiPartyId();
 		TimeZone UTC = TimeZone.getTimeZone("UTC");
-		Date lastUpdateDate = new Date();
+		ZonedDateTime lastUpdateDate = ZonedDateTime.now();
 		
 		Location reading = new Location(
 				countryCode,

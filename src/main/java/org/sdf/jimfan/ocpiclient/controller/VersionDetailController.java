@@ -1,5 +1,6 @@
 package org.sdf.jimfan.ocpiclient.controller;
 
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 @RestController
 @EnableAutoConfiguration
@@ -61,9 +62,9 @@ public class VersionDetailController {
 		
 		@JsonProperty("timestamp")
 		@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSX")
-		public Date timestamp;
+		public ZonedDateTime timestamp;
 		
-		public VersionDetailsResult(VersionDetails data, int statusCode, String statusMessage, Date timestamp) {
+		public VersionDetailsResult(VersionDetails data, int statusCode, String statusMessage, ZonedDateTime timestamp) {
 			this.data = data;
 			this.statusCode = statusCode;
 			this.statusMessage = statusMessage;
@@ -92,6 +93,6 @@ public class VersionDetailController {
 			versionDetailsResult,
 			1000,
 			"OK", 
-			new Date());
+			ZonedDateTime.now());
 	}
 }

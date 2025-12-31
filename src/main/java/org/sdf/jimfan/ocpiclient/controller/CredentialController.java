@@ -17,7 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 
 @RestController
@@ -57,12 +57,12 @@ public class CredentialController {
 						this.ocpiConfigService.getMyOcpiCountryCode()) 
 					});
 			
-			return new OcpiResponse(newTheirCredential, 1000, "OK", new Date());
+			return new OcpiResponse(newTheirCredential, 1000, "OK", ZonedDateTime.now());
 		}
 		catch (Exception ex) {
 			logger.error(ex.getMessage());
 			ex.printStackTrace();
-			return new OcpiResponse(null, 2000, "Unexpected error", new Date());
+			return new OcpiResponse(null, 2000, "Unexpected error", ZonedDateTime.now());
 		}
 	}
 }
