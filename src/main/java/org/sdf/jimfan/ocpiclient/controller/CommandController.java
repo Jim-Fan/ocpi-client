@@ -1,14 +1,5 @@
 package org.sdf.jimfan.ocpiclient.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
 import org.sdf.jimfan.ocpiclient.exception.OcpiException;
 import org.sdf.jimfan.ocpiclient.model.OcpiResponse;
 import org.sdf.jimfan.ocpiclient.model.command.CommandResponse;
@@ -25,7 +16,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +30,15 @@ import org.slf4j.LoggerFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
 @RestController
 @EnableAutoConfiguration
 @ComponentScan
@@ -51,7 +51,7 @@ public class CommandController {
 	private OcpiSessionService sessionService;
 	
 	@Autowired
-	private SimpleAsyncTaskExecutor taskExecutor;
+	private TaskExecutor taskExecutor;
 	
 	@Autowired
 	private OcpiConfigService configService;
