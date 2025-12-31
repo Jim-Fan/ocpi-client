@@ -223,12 +223,12 @@ public class OcpiTokenService {
 					}
 					else if (incomingToken.getLastUpdated() != null) {
 						if (incomingToken.getLastUpdated().isBefore(existing.getLastUpdated())) {
-							this.tokens.put(key, incomingToken);
-							++tokenAdded;
+							logger.warn("Incoming token {} is older than existing {}, ignored", incomingToken, existing);
+							++tokenIgnored;
 						}
 						else {
-							logger.warn("Incoming token {} is not newer then existing {}, ignored", incomingToken, existing);
-							++tokenIgnored;
+							this.tokens.put(key, incomingToken);
+							++tokenAdded;
 						}
 					}
 					else {
