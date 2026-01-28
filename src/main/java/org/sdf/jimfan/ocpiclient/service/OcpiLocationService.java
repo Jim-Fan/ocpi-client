@@ -12,6 +12,7 @@ import org.sdf.jimfan.ocpiclient.model.location.Connector;
 import org.sdf.jimfan.ocpiclient.model.location.EVSE;
 import org.sdf.jimfan.ocpiclient.model.location.Location;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
@@ -50,7 +51,8 @@ import java.util.UUID;
  *     
  *     Check HTTP status and OCPI status code in API response
  */
-@Service
+@Service("OcpiLocationService")
+@DependsOn("OcpiTariffService")
 @Scope(value=WebApplicationContext.SCOPE_APPLICATION)
 public class OcpiLocationService {
 
@@ -95,12 +97,12 @@ public class OcpiLocationService {
 				120,
 				lastUpdateDate);
 		connector.setMaxElectricPower(connector.getMaxAmperage() * connector.getMaxVoltage());
-		connector.setTariffIds(List.of(this.tariffService.getTariff().getId()));
+		connector.setTariffIds(List.of(this.tariffService.getTariffById("520726f1-a965-4b27-9fe6-d866a57c06ba").getId()));
 		
 		EVSE readingCharger = new EVSE(
 				"c410f411-ee01-4e33-a0ad-4d86f678bfd1",  // uid
 				String.format("%s*%s*E*%s", countryCode, partyId, "46709394"), // EVSE ID
-				Status.PLANNED,
+				Status.AVAILABLE,
 				List.of(connector),
 				"FORBURY-1", // physical reference
 				lastUpdateDate);

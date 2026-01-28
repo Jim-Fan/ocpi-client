@@ -13,10 +13,15 @@ public class TariffElement extends JsonFormattable {
 	
 	@JsonProperty("restrictions")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private TariffRestrictions restrictions;
+	private List<TariffRestrictions> restrictions;
 
 	public TariffElement(List<PriceComponent> priceComponents) {
 		this.priceComponents = priceComponents;
+	}
+	
+	public TariffElement(List<PriceComponent> priceComponents, List<TariffRestrictions> restrictions) {
+		this.priceComponents = priceComponents;
+		this.restrictions = restrictions;
 	}
 	
 	public List<PriceComponent> getPriceComponents() {
@@ -27,11 +32,11 @@ public class TariffElement extends JsonFormattable {
 		this.priceComponents = priceComponents;
 	}
 
-	public TariffRestrictions getRestrictions() {
+	public List<TariffRestrictions> getRestrictions() {
 		return restrictions;
 	}
 
-	public void setRestrictions(TariffRestrictions restrictions) {
+	public void setRestrictions(List<TariffRestrictions> restrictions) {
 		this.restrictions = restrictions;
 	}
 }

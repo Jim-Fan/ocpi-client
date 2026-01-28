@@ -48,7 +48,7 @@ public class TariffController {
 		logger.info("offset = {}", offset);
 		logger.info("limit = {}", limit);
 		
-		List<Tariff> tariffs = List.of(this.tariffService.getTariff());
+		List<Tariff> tariffs = this.tariffService.getAllTariffs();
 		OcpiResponse<List<Tariff>> ocpiResponse = new OcpiResponse<List<Tariff>>(tariffs, 1000, "OK", ZonedDateTime.now());
 		
 		// Potential for code re-use
