@@ -10,6 +10,7 @@ import org.sdf.jimfan.ocpiclient.model.credential.CredentialsRole;
 import org.sdf.jimfan.ocpiclient.model.credential.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class OcpiCredentialService {
 		String partyId = this.configService.getMyOcpiPartyId();
 		String countryCode = this.configService.getMyOcpiCountryCode();
 		
-		ResponseEntity<OcpiResponse> response = null;
+		ResponseEntity<OcpiResponse<Object>> response = null;
 		ObjectMapper objectMapper = new ObjectMapper();
 		
 		// Invoke /credentials endpoint against OCPI server, should receive token C in the end
@@ -74,11 +75,10 @@ public class OcpiCredentialService {
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Token " + encodedToken)    // required by OCPI 2.2.1
 				.retrieve()
-				.toEntity(OcpiResponse.class);
-				//.toBodilessEntity();
+				.toEntity(new ParameterizedTypeReference<>() {});
 			
 			logger.info("Response = {}", response.getBody());
-			return objectMapper.writeValueAsString(response);
+			return "OK";
 		}
 		catch (RestClientResponseException restEx) {
 			
