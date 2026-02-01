@@ -80,7 +80,8 @@ public class VersionDetailController {
 			new Endpoint("credentials", "RECEIVER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/credentials"),
 			new Endpoint("tokens", "RECEIVER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/tokens"),
 			new Endpoint("locations", "SENDER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/locations"),
-			new Endpoint("tariffs", "SENDER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/tariffs")
+			new Endpoint("tariffs", "SENDER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/tariffs"),
+			new Endpoint("commands", "RECEIVER", applicationProtocol + "://" + applicationDomain + "/ocpi/2.2.1/commands")
 		});
 	
 	/**

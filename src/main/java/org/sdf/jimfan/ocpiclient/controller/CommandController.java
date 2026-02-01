@@ -103,7 +103,9 @@ public class CommandController {
 		this.taskExecutor.execute(new Runnable() {
 			@Override
 			public void run() {
-				CommandResult commandResult = new CommandResult(CommandResultType.EVSE_INOPERATIVE, List.of(new DisplayText(LanguageCode.en, "Charge station is not yet usable")));
+				CommandResult commandResult = new CommandResult(
+						CommandResultType.EVSE_INOPERATIVE, 
+						List.of(new DisplayText(LanguageCode.en, "Charge station is not yet usable")));
 				RestClient restClient = RestClient.create();
 				
 				URI uri = null;
